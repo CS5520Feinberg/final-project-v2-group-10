@@ -6,9 +6,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +26,12 @@ import java.util.regex.Pattern;
 public class RegisterActivity extends AppCompatActivity {
 
     EditText signupUsername, signupEmail, signupPwd, signupConfirmPwd;
+
+    String[] campus = {"Arlington", "Boston", "Charlotte", "Miami", "Oakland", "Portland", "San Francisco", "Silicon Valley", "Seattle"};
+
+    AutoCompleteTextView autoCompleteTextView;
+
+    ArrayAdapter<String> adapterCampus;
     Button signupBtn;
     FirebaseAuth mAuth;
 
@@ -41,13 +52,22 @@ public class RegisterActivity extends AppCompatActivity {
         signupPwd = findViewById(R.id.signupPwd);
         signupConfirmPwd = findViewById(R.id.signupConfirmPwd);
         signupBtn = findViewById(R.id.signupBtn);
+        autoCompleteTextView = findViewById(R.id.selectCampus);
+        adapterCampus = new ArrayAdapter<>(this, R.layout.list_campus, campus);
+        autoCompleteTextView.setAdapter(adapterCampus);
+
+        autoCompleteTextView.setOnItemClickListener((parent, view, position, id) -> {
+            String campusItem = adapterCampus.getItem(position);
+            Toast.makeText(RegisterActivity.this, "Item" + campusItem, Toast.LENGTH_SHORT).show();
+        });
 
         signupBtn.setOnClickListener(v -> {
-            String username, email, password, confirmPwd;
+            String username, email, password, confirmPwd, selectCampus;
             username = signupUsername.getText().toString();
             email = signupEmail.getText().toString();
             password = signupPwd.getText().toString();
             confirmPwd = signupConfirmPwd.getText().toString();
+            selectCampus = autoCompleteTextView.getText().toString();
 
             if (TextUtils.isEmpty(username)) {
                 signupUsername.setError("Username is Required");
@@ -66,19 +86,21 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
+            if (selectCampus.equals("")) {
+                Toast.makeText(RegisterActivity.this, "Please choose your campus", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             mAuth.getCurrentUser().sendEmailVerification()
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Toast.makeText(RegisterActivity.this, "Register Successfully, please check your email for verifying", Toast.LENGTH_SHORT).show();
+                                    .addOnCompleteListener(task1 -> {
+                                        if (task1.isSuccessful()) {
+                                            Toast.makeText(RegisterActivity.this, "Register Successfully, please check your email for verifying", Toast.LENGTH_SHORT).show();
 
-                                            } else {
-                                                Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                            }
+                                        } else {
+                                            Toast.makeText(RegisterActivity.this, task1.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     });
                         } else {

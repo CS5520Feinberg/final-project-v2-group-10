@@ -7,23 +7,22 @@ import java.util.Map;
 
 @IgnoreExtraProperties
 public class User {
-    String avatar = ""; //user icon
-    String campus = "";
-    String name;
-    String email;
-    Map<String, Long> offerServicePosts = new HashMap<>();
-    Map<String, Long> wantServicePosts = new HashMap<>();
-    Map<String, Long> offerProductPosts = new HashMap<>();
-    Map<String, Long> wantProductPosts = new HashMap<>();
-    Map<String, Long> chats = new HashMap<>();
+    public String avatar = ""; //user icon
+    public String campus = "";
+    public String name = "";
+    public String email;
+    public Map<String, Long> offerServicePosts = new HashMap<>();
+    public Map<String, Long> wantServicePosts = new HashMap<>();
+    public Map<String, Long> offerProductPosts = new HashMap<>();
+    public Map<String, Long> wantProductPosts = new HashMap<>();
+    public Map<String, Long> chats = new HashMap<>();
 
     public User() {
 
     }
 
-    public User(String name, String email) {
-        // Mandatory fields
-        this.name = name;
+    public User(String email) {
+        // Mandatory field
         this.email = email;
     }
 

@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
                 } else if (id == R.id.user) {
                     replaceFragment("profile");
                 }
-                Log.d("xx", String.valueOf(binding.bottomNavigationView.getSelectedItemId()));
                 return true;
             }
         });

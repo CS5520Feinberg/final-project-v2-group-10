@@ -9,15 +9,15 @@ import java.util.Map;
 
 @IgnoreExtraProperties
 public class Post {
-    Long type; // ["OfferProduct", "NeedProduct","OfferService", "NeedService"]
-    String userId;
-    List<String> images = new ArrayList<>();
-    String title;
-    String text;
-    Double price;
-    Map<String, Long> replies = new HashMap<>();
-    Long timeStamp;
-    Boolean isActive;
+    public Long type; // ["OfferProduct", "NeedProduct","OfferService", "NeedService"]
+    public String userId;
+    public List<String> images = new ArrayList<>();
+    public String title;
+    public String text;
+    public Double price;
+    public Map<String, Long> replies = new HashMap<>();
+    public Long timeStamp;
+    public Boolean isActive;
 
     public Post() {
 

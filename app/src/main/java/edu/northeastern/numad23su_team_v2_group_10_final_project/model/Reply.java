@@ -7,10 +7,10 @@ import java.util.Map;
 
 @IgnoreExtraProperties
 public class Reply {
-    String userId;
-    String text;
-    Long Timestamp;
-    Map<String, Long> replies = new HashMap<>();
+    public String userId;
+    public String text;
+    public Long Timestamp;
+    public Map<String, Long> replies = new HashMap<>();
 
     public Reply() {
 

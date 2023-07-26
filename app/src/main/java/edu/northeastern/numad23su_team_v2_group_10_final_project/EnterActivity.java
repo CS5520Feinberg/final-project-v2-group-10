@@ -26,5 +26,10 @@ public class EnterActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        btn_register.setOnClickListener(V -> {
+            Intent i = new Intent(EnterActivity.this, RegisterActivity.class);
+            startActivity(i);
+        });
     }
 }

@@ -46,6 +46,7 @@ public class UploadImageActivity extends AppCompatActivity {
     MenuItem editItem;
     MenuItem deleteItem;
     MenuItem cancelItem;
+    MenuItem finishItem;
     Button fab;
     Boolean isInEdit = false;
 
@@ -107,10 +108,6 @@ public class UploadImageActivity extends AppCompatActivity {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, COL, GridLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(adapter);
-
-
-
-
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -172,7 +169,8 @@ public class UploadImageActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.upload_image_top, menu);
-
+        finishItem = menu.findItem(R.id.finish);
+        finishItem.setVisible(!isInEdit);
         return true;
     }
 
@@ -194,6 +192,7 @@ public class UploadImageActivity extends AppCompatActivity {
         editItem.setVisible(!isInEdit);
         deleteItem.setVisible(isInEdit);
         cancelItem.setVisible(isInEdit);
+        if (finishItem != null)  finishItem.setVisible(!isInEdit);
     }
 
     private void selectImage() {

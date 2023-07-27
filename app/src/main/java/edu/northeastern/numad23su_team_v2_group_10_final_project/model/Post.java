@@ -1,6 +1,7 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.model;
 
 import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.firebase.database.ServerValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ public class Post {
     public Long type; // ["OfferProduct", "NeedProduct","OfferService", "NeedService"]
     public String userId;
     public List<String> images = new ArrayList<>();
+    public List<String> smallImages = new ArrayList<>();
     public String title;
     public String text;
     public Double price;
@@ -32,5 +34,24 @@ public class Post {
         this.isActive = true;
     }
 
-    //TODO: implement toMap() to add timestamp
+    public Map<String,Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", type);
+        map.put("userId", userId);
+        map.put("title", title);
+        map.put("text", text);
+        map.put("price", price);
+        map.put("isActive", isActive);
+        map.put("timestamp", ServerValue.TIMESTAMP);
+        if (images.size() > 0) {
+            map.put("images", images);
+        }
+        if (smallImages.size() > 0) {
+            map.put("smallImages", images);
+        }
+        if (replies.size() > 0) {
+            map.put("replies", replies);
+        }
+        return map;
+    }
 }

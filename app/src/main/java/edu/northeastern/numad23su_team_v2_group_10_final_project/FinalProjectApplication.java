@@ -4,8 +4,8 @@ import android.app.Application;
 
 public class FinalProjectApplication extends Application {
     // can add data (e.g., user id to this class)
-    String userId;
-    String email;
+    public String userId;
+    public String email;
     private static FinalProjectApplication singleton;
 
 

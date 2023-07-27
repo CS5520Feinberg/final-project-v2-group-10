@@ -1,9 +1,11 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -12,15 +14,18 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -29,6 +34,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     String[] campus = {"Arlington", "Boston", "Charlotte", "Miami", "Oakland", "Portland", "San Francisco", "Silicon Valley", "Seattle"};
 
+    ImageView imageView;
     AutoCompleteTextView autoCompleteTextView;
 
     ArrayAdapter<String> adapterCampus;
@@ -55,11 +61,23 @@ public class RegisterActivity extends AppCompatActivity {
         autoCompleteTextView = findViewById(R.id.selectCampus);
         adapterCampus = new ArrayAdapter<>(this, R.layout.list_campus, campus);
         autoCompleteTextView.setAdapter(adapterCampus);
+        imageView = findViewById(R.id.imageView);
+
+
 
         autoCompleteTextView.setOnItemClickListener((parent, view, position, id) -> {
             String campusItem = adapterCampus.getItem(position);
             Toast.makeText(RegisterActivity.this, "Item" + campusItem, Toast.LENGTH_SHORT).show();
         });
+
+        imageView.setOnClickListener(v -> {
+            ImagePicker.with(this)
+                    .crop()	    			//Crop image(Optional), Check Customization for more option
+                    .compress(1024)			//Final image size will be less than 1 MB(Optional)
+                    .maxResultSize(1080, 1080)	//Final image resolution will be less than 1080 x 1080(Optional)
+                    .start();
+        });
+
 
         signupBtn.setOnClickListener(v -> {
             String username, email, password, confirmPwd, selectCampus;
@@ -110,7 +128,6 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-
     private void LoginActivity() {
         Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
@@ -123,4 +140,10 @@ public class RegisterActivity extends AppCompatActivity {
         return pattern.matcher(emailAddress).matches();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Uri uri = data.getData();
+        imageView.setImageURI(uri);
+    }
 }

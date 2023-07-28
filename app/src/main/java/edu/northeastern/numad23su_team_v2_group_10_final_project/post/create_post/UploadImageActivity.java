@@ -250,7 +250,6 @@ public class UploadImageActivity extends AppCompatActivity {
                 width = parent.getWidth();
                 list.add(new UploadImage(mCameraUri.toString(), getPath(this, mCameraUri), width / 2));
             } else {
-                Toast.makeText(this, "Cancel", Toast.LENGTH_LONG).show();
                 ContentResolver contentResolver = getContentResolver ();
                 contentResolver.delete (mCameraUri,null ,null );
             }

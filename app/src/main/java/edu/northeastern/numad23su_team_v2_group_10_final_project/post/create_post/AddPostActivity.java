@@ -85,7 +85,7 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
         mAuth = FirebaseAuth.getInstance();
         mDbRef =  FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        getSupportActionBar().setTitle("Create post");
+        getSupportActionBar().setTitle("create post");
         FinalProjectApplication myApplication = (FinalProjectApplication) getApplicationContext();
         if (ContextCompat.checkSelfPermission(AddPostActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {

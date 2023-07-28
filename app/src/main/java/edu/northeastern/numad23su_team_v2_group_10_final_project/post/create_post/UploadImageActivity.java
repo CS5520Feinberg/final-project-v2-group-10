@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -250,6 +251,8 @@ public class UploadImageActivity extends AppCompatActivity {
                 list.add(new UploadImage(mCameraUri.toString(), getPath(this, mCameraUri), width / 2));
             } else {
                 Toast.makeText(this, "Cancel", Toast.LENGTH_LONG).show();
+                ContentResolver contentResolver = getContentResolver ();
+                contentResolver.delete (mCameraUri,null ,null );
             }
         }
     }

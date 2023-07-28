@@ -6,4 +6,9 @@
         android:id="@+id/delete"
         app:showAsAction="always|withText"
         android:layout_alignParentLeft="true"/>
+    <item android:title="Camera"
+        android:icon="@drawable/ic_baseline_camera_alt_24"
+        android:id="@+id/camera"
+        app:showAsAction="always|withText"
+        android:layout_alignParentLeft="true"/>
 </menu>

@@ -27,27 +27,6 @@
                 app:shapeAppearanceOverlay="@style/circular"
                 app:srcCompat="@drawable/baseline_add_a_photo_24" />
 
-            <!--        <TextView-->
-            <!--            android:layout_width="match_parent"-->
-            <!--            android:layout_height="wrap_content"-->
-            <!--            android:id="@+id/signupRegister"-->
-            <!--            android:text="Register"-->
-            <!--            android:textColor="@color/black"-->
-            <!--            android:textSize="35dp"-->
-            <!--            android:textStyle="bold"-->
-            <!--            android:layout_margin="20dp"-->
-            <!--            android:gravity="center"/>-->
-
-<!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--                android:id="@+id/floatingActionButton4"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginLeft="190dp"-->
-<!--                android:layout_marginTop="-50dp"-->
-<!--                android:clickable="true"-->
-<!--                app:backgroundTint="@android:color/transparent"-->
-<!--                app:srcCompat="@drawable/baseline_photo_camera_24" />-->
-
             <EditText
                 android:id="@+id/signupUsername"
                 android:layout_width="match_parent"

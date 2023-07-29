@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId "edu.northeastern.numad23su_team_v2_group_10_final_project"
         minSdk 21
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 

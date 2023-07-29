@@ -1,6 +1,5 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,25 +7,24 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
-import android.widget.AdapterView;
+
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.dhaval2404.imagepicker.ImagePicker;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 
-import java.util.Objects;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.regex.Pattern;
+
+import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -40,6 +38,8 @@ public class RegisterActivity extends AppCompatActivity {
     ArrayAdapter<String> adapterCampus;
     Button signupBtn;
     FirebaseAuth mAuth;
+
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +63,7 @@ public class RegisterActivity extends AppCompatActivity {
         autoCompleteTextView.setAdapter(adapterCampus);
         imageView = findViewById(R.id.imageView);
 
-
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         autoCompleteTextView.setOnItemClickListener((parent, view, position, id) -> {
             String campusItem = adapterCampus.getItem(position);
@@ -77,7 +77,6 @@ public class RegisterActivity extends AppCompatActivity {
                     .maxResultSize(1080, 1080)	//Final image resolution will be less than 1080 x 1080(Optional)
                     .start();
         });
-
 
         signupBtn.setOnClickListener(v -> {
             String username, email, password, confirmPwd, selectCampus;
@@ -109,22 +108,10 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            mAuth.getCurrentUser().sendEmailVerification()
-                                    .addOnCompleteListener(task1 -> {
-                                        if (task1.isSuccessful()) {
-                                            Toast.makeText(RegisterActivity.this, "Register Successfully, please check your email for verifying", Toast.LENGTH_SHORT).show();
-
-                                        } else {
-                                            Toast.makeText(RegisterActivity.this, task1.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        } else {
-                            Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+            registerUser(email, password);
+            User user = new User(username, email, selectCampus);
+            String keyId = mDatabase.push().getKey();
+            mDatabase.child(keyId).setValue(user);
         });
     }
 
@@ -145,5 +132,24 @@ public class RegisterActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         Uri uri = data.getData();
         imageView.setImageURI(uri);
+    }
+
+    private void registerUser(String email, String password) {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        mAuth.getCurrentUser().sendEmailVerification()
+                                .addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        Toast.makeText(RegisterActivity.this, "Register Successfully, please check your email for verifying", Toast.LENGTH_SHORT).show();
+                                        LoginActivity();
+                                    } else {
+                                        Toast.makeText(RegisterActivity.this, task1.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    } else {
+                        Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

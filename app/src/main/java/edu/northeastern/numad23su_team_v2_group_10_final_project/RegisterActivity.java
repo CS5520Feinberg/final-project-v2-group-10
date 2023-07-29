@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -109,9 +110,11 @@ public class RegisterActivity extends AppCompatActivity {
             }
 
             registerUser(email, password);
+
             User user = new User(username, email, selectCampus);
             String keyId = mDatabase.push().getKey();
             mDatabase.child(keyId).setValue(user);
+            LoginActivity();
         });
     }
 
@@ -138,18 +141,21 @@ public class RegisterActivity extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        mAuth.getCurrentUser().sendEmailVerification()
-                                .addOnCompleteListener(task1 -> {
-                                    if (task1.isSuccessful()) {
-                                        Toast.makeText(RegisterActivity.this, "Register Successfully, please check your email for verifying", Toast.LENGTH_SHORT).show();
-                                        LoginActivity();
-                                    } else {
-                                        Toast.makeText(RegisterActivity.this, task1.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                        sendEmailVerification();
                     } else {
-                        Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null && !user.isEmailVerified()) {
+                            sendEmailVerification();
+                        } else {
+                            Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
+    }
+
+    private void sendEmailVerification() {
+        final FirebaseUser user = mAuth.getCurrentUser();
+        user.sendEmailVerification()
+                .addOnCompleteListener(task -> Toast.makeText(RegisterActivity.this, "Please check your email for verifying", Toast.LENGTH_SHORT).show());
     }
 }

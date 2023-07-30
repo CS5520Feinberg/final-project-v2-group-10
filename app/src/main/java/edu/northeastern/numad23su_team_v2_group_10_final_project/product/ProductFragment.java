@@ -18,8 +18,7 @@ import java.util.ArrayList;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.post.create_post.AddPostActivity;
-import edu.northeastern.numad23su_team_v2_group_10_final_project.post.create_post.UploadImageActivity;
-import edu.northeastern.numad23su_team_v2_group_10_final_project.public_fragments.PostFragment;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.public_fragments.TempPostFragment;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.public_fragments.FSAdapter;
 
 /**
@@ -86,8 +85,8 @@ public class ProductFragment extends Fragment {
             }
         });
         FSAdapter vpAdapter = new FSAdapter(this);
-        vpAdapter.addFragment(PostFragment.newInstance("I offer", "product"));
-        vpAdapter.addFragment(PostFragment.newInstance("I need", "product"));
+        vpAdapter.addFragment(TempPostFragment.newInstance("", "products"));
+        vpAdapter.addFragment(TempPostFragment.newInstance("", "products in need"));
         viewpager.setAdapter(vpAdapter);
         ArrayList<String> fragmentTitle = new ArrayList<>();
         fragmentTitle.add("I offer");

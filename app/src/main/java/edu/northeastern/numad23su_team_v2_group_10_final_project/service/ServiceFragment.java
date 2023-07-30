@@ -15,7 +15,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import java.util.ArrayList;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
-import edu.northeastern.numad23su_team_v2_group_10_final_project.public_fragments.PostFragment;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.public_fragments.TempPostFragment;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.public_fragments.FSAdapter;
 
 /**
@@ -73,8 +73,8 @@ public class ServiceFragment extends Fragment {
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);
         ViewPager2 viewpager = view.findViewById(R.id.view_pager);
         FSAdapter vpAdapter = new FSAdapter(this);
-        vpAdapter.addFragment(PostFragment.newInstance("I offer", "product"));
-        vpAdapter.addFragment(PostFragment.newInstance("I need", "product"));
+        vpAdapter.addFragment(TempPostFragment.newInstance("", "services"));
+        vpAdapter.addFragment(TempPostFragment.newInstance("", "services in need"));
         viewpager.setAdapter(vpAdapter);
         ArrayList<String> fragmentTitle = new ArrayList<>();
         fragmentTitle.add("I offer");

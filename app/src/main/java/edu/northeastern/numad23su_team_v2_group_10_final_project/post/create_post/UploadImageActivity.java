@@ -1,7 +1,6 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.post.create_post;
 
 import static edu.northeastern.numad23su_team_v2_group_10_final_project.post.Utils.getPath;
-import static edu.northeastern.numad23su_team_v2_group_10_final_project.post.Utils.getRealPathFromURI;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,16 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -36,13 +32,11 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;

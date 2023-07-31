@@ -1,5 +1,7 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.post.create_post;
 
+import static edu.northeastern.numad23su_team_v2_group_10_final_project.post.SearchUtils.triGram;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -24,13 +27,22 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import com.google.firebase.firestore.Filter;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.core.CompositeFilter;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -45,9 +57,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.FinalProjectApplication;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.Post;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.post.SearchUtils;
 
 public class AddPostActivity extends AppCompatActivity implements ExitDialogFragment.NoticeDialogListener {
     private FirebaseAuth mAuth;
+    private FirebaseFirestore mFireStoreRef;
     private DatabaseReference mDbRef;
     private StorageReference mStorageRef;
 
@@ -85,6 +99,7 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
         mAuth = FirebaseAuth.getInstance();
         mDbRef =  FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
+        mFireStoreRef = FirebaseFirestore.getInstance();
         getSupportActionBar().setTitle("create post");
         FinalProjectApplication myApplication = (FinalProjectApplication) getApplicationContext();
         if (ContextCompat.checkSelfPermission(AddPostActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -273,6 +288,35 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
         }).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
+                // add data to FireStore (for full text search)
+                // ref: https://levelup.gitconnected.com/firestore-full-text-search-at-no-extra-cost-ee148856685
+                Map<String, Object> data = triGram(titleStr + " " + contentStr);
+                mFireStoreRef.collection("posts").document(postTypes[selPostType]).collection("posts").document(key).set(data).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(AddPostActivity.this, "upload to FireStore failed.", Toast.LENGTH_LONG).show();
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+//                        mFireStoreRef.collection("posts").document(postTypes[selPostType]).collection("posts").
+//                                where(Filter.and(SearchUtils.generateFilterArr("test"))).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                                    @Override
+//                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                                        if (task.isSuccessful()) {
+//                                            for (QueryDocumentSnapshot document : task.getResult()) {
+//                                                Log.d("xx", document.getId() + " => " + document.getData());
+//                                            }
+//                                        } else {
+//                                            Log.d("xx", "Error getting documents: ", task.getException());
+//                                        }
+//                                    }
+//                                });
+                    }
+                });
+
+
+
                 // upload images
                 for (int i = 0; i < list.size(); i++) {
                     String name = String.format("%03d.jpg", i);
@@ -295,6 +339,7 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
                         @Override
                         public void onFailure(@NonNull Exception exception) {
                             Toast.makeText(AddPostActivity.this, "Upload image " + (finalI + 1) + " failed.", Toast.LENGTH_LONG).show();
+                            Log.d("xx", exception.toString());
                         }
                     }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override

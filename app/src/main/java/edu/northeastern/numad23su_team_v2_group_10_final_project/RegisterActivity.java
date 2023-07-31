@@ -25,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.regex.Pattern;
 
+import edu.northeastern.numad23su_team_v2_group_10_final_project.message.FirebaseUtil;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -91,7 +92,7 @@ public class RegisterActivity extends AppCompatActivity {
                 signupUsername.setError("Username is Required");
                 return;
             }
-            if (TextUtils.isEmpty(email) || !validEmail(email)) {
+            if (TextUtils.isEmpty(email)) {
                 signupEmail.setError("Valid NEU Email is Required");
                 return;
             }
@@ -109,11 +110,9 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            registerUser(email, password);
-
-            User user = new User(username, email, selectCampus);
-            String keyId = mDatabase.push().getKey();
-            mDatabase.child(keyId).setValue(user);
+            String userId = mAuth.getCurrentUser().getUid();
+            User newUser = new User(userId, username, email, selectCampus);
+            registerUser(email, password, newUser);
             LoginActivity();
         });
     }
@@ -137,19 +136,22 @@ public class RegisterActivity extends AppCompatActivity {
         imageView.setImageURI(uri);
     }
 
-    private void registerUser(String email, String password) {
+    private void registerUser(String email, String password, User newUser) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
+                    FirebaseUser user = mAuth.getCurrentUser();
                     if (task.isSuccessful()) {
                         sendEmailVerification();
                     } else {
-                        FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null && !user.isEmailVerified()) {
                             sendEmailVerification();
                         } else {
                             Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
+                    String userid = user.getUid();
+                    mDatabase.child("users").child(userid).setValue(newUser);
+                    FirebaseUtil.currentUserDetails().set(newUser);
                 });
     }
 

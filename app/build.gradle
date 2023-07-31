@@ -49,12 +49,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:21.0.1'
 
     // Import the Firebase BoM
-    implementation platform('com.google.firebase:firebase-bom:26.3.0')
+    implementation platform('com.google.firebase:firebase-bom:32.2.0')
 
-    // When using the BoM, you don't specify versions in Firebase library dependencies
-
-    // Declare the dependency for the Firebase SDK for Google Analytics
-    implementation 'com.google.firebase:firebase-analytics'
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 
     // Declare the dependencies for any other desired Firebase products
     // For example, declare the dependencies for Firebase Authentication and Cloud Firestore
@@ -63,4 +61,7 @@ dependencies {
 
     // https://github.com/Dhaval2404/ImagePicker
     implementation 'com.github.dhaval2404:imagepicker:2.1'
+
+    // FirebaseUI for Cloud Firestore
+    implementation 'com.firebaseui:firebase-ui-firestore:8.0.2'
 }

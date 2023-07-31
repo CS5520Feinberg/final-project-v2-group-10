@@ -11,6 +11,7 @@ public class User {
     String campus = "";
     String name;
     String email;
+    String userId;
     Map<String, Long> offerServicePosts = new HashMap<>();
     Map<String, Long> wantServicePosts = new HashMap<>();
     Map<String, Long> offerProductPosts = new HashMap<>();
@@ -27,11 +28,16 @@ public class User {
         this.email = email;
     }
 
-    public User(String name, String email, String campus) {
+    public User(String id, String name, String email, String campus) {
         // Mandatory fields
+        this.userId = id;
         this.name = name;
         this.email = email;
         this.campus = campus;
+    }
+
+    public String getUserId() {
+        return this.userId;
     }
 
     public String getAvatar() {

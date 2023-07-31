@@ -68,8 +68,8 @@ public class MessageFragment extends Fragment {
         viewpager.setAdapter(vpAdapter);
 
         ArrayList<String> fragmentTitle = new ArrayList<>();
-        fragmentTitle.add("Chat");
-        fragmentTitle.add("Users");
+        fragmentTitle.add("History");
+        fragmentTitle.add("Search Users");
 
         new TabLayoutMediator(tabLayout, viewpager,
                 (tab, position) -> tab.setText(fragmentTitle.get(position))

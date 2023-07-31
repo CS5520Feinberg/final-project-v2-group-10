@@ -1,5 +1,7 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.model;
 
+import com.google.firebase.Timestamp;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -7,50 +9,39 @@ import java.util.Locale;
 public class ChatMessage {
     private String message;
     private String senderId;
-    private long timeStamp;
-    private String currentTime;
+    private Timestamp timestamp;
 
-    public ChatMessage(String message, String senderId) {
+    public ChatMessage() {
+
+    }
+
+    public ChatMessage(String message, String senderId, Timestamp timestamp) {
         this.message = message;
         this.senderId = senderId;
-        this.timeStamp = System.currentTimeMillis();
-        this.currentTime = getTimeStringFromTimestamp(this.timeStamp);
+        this.timestamp = timestamp;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
     public String getSenderId() {
         return senderId;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public void setSenderId(String senderId) {
         this.senderId = senderId;
     }
 
-    public long getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    public String getCurrentTime() {
-        return currentTime;
-    }
-
-    public void setCurrentTime(String currentTime) {
-        this.currentTime = currentTime;
-    }
-
-    private String getTimeStringFromTimestamp(long timeStamp) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        return sdf.format(new Date(timeStamp));
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 }

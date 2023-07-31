@@ -25,7 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.regex.Pattern;
 
-import edu.northeastern.numad23su_team_v2_group_10_final_project.message.FirebaseUtil;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.util.FirebaseUtil;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
 
 public class RegisterActivity extends AppCompatActivity {

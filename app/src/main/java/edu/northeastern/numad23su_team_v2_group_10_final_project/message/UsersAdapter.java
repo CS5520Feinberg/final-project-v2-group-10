@@ -1,6 +1,7 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.message;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
-import java.util.List;
-
+import edu.northeastern.numad23su_team_v2_group_10_final_project.ChatActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.util.AndroidUtil;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.util.FirebaseUtil;
 
 public class UsersAdapter extends FirestoreRecyclerAdapter<User, UsersAdapter.UsersViewHolder> {
 
@@ -34,9 +36,14 @@ public class UsersAdapter extends FirestoreRecyclerAdapter<User, UsersAdapter.Us
             holder.username.setText(model.getName() + " (Me)");
         }
 
-        holder.itemView.setOnLongClickListener( v -> {
-            //navigate to chat activity
-            return true;
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ChatActivity.class);
+                AndroidUtil.passUserModelAsIntent(intent, model);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+            }
         });
     }
 

@@ -40,6 +40,10 @@ public class User {
         return this.userId;
     }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     public String getAvatar() {
         return avatar;
     }

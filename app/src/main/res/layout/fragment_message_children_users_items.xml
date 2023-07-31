@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    android:elevation="2dp">
+    android:elevation="2dp"
+    android:background="@drawable/edittext_outline">
 
     <ImageView
         android:id="@+id/imageView2"

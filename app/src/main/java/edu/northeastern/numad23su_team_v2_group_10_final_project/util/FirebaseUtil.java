@@ -1,4 +1,4 @@
-package edu.northeastern.numad23su_team_v2_group_10_final_project.message;
+package edu.northeastern.numad23su_team_v2_group_10_final_project.util;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;

@@ -4,6 +4,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -22,7 +24,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.regex.Pattern;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
@@ -65,11 +71,6 @@ public class RegisterActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
-        autoCompleteTextView.setOnItemClickListener((parent, view, position, id) -> {
-            String campusItem = adapterCampus.getItem(position);
-            Toast.makeText(RegisterActivity.this, "Item" + campusItem, Toast.LENGTH_SHORT).show();
-        });
 
         imageView.setOnClickListener(v -> {
             ImagePicker.with(this)
@@ -149,6 +150,7 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                     String userid = user.getUid();
                     mDatabase.child("users").child(userid).setValue(newUser);
+                    uploadUserImage(userid);
                 });
     }
 
@@ -156,5 +158,25 @@ public class RegisterActivity extends AppCompatActivity {
         final FirebaseUser user = mAuth.getCurrentUser();
         user.sendEmailVerification()
                 .addOnCompleteListener(task -> Toast.makeText(RegisterActivity.this, "Please check your email for verifying", Toast.LENGTH_SHORT).show());
+    }
+
+    private void uploadUserImage(String userid) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        String path = "images/avatar/" + userid + "/000.jpg";
+        StorageReference avatarRef = storageRef.child(path);
+
+        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = avatarRef.putBytes(data);
+        uploadTask.addOnFailureListener(exception -> {
+            Toast.makeText(RegisterActivity.this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+        }).addOnSuccessListener(taskSnapshot -> {
+            Toast.makeText(RegisterActivity.this, "Upload Image Successfully!", Toast.LENGTH_SHORT).show();
+
+        });
     }
 }

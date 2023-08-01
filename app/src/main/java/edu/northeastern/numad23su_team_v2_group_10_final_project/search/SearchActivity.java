@@ -3,6 +3,7 @@ package edu.northeastern.numad23su_team_v2_group_10_final_project.search;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuItemCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
@@ -22,25 +23,27 @@ import edu.northeastern.numad23su_team_v2_group_10_final_project.public_fragment
 import edu.northeastern.numad23su_team_v2_group_10_final_project.public_fragments.TempPostFragment;
 
 public class SearchActivity extends AppCompatActivity {
+    private ItemViewModel viewModel;
     MenuItem searchItem;
     String query;
     SearchView searchView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(this).get(ItemViewModel.class);
         setContentView(R.layout.activity_search);
         Bundle extras = getIntent().getExtras();
         if (extras != null && extras.containsKey("query")) {
             query = extras.getString("query");
         }
-
+        viewModel.selectItem(query);
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         ViewPager2 viewpager = findViewById(R.id.view_pager);
         FSAdapter vpAdapter = new FSAdapter(this);
-        vpAdapter.addFragment(TempPostFragment.newInstance(query, "products"));
-        vpAdapter.addFragment(TempPostFragment.newInstance(query, "services"));
-        vpAdapter.addFragment(TempPostFragment.newInstance(query, "products in need"));
-        vpAdapter.addFragment(TempPostFragment.newInstance(query, "services in need"));
+        vpAdapter.addFragment(TempPostFragment.newInstance(query, 0));
+        vpAdapter.addFragment(TempPostFragment.newInstance(query, 2));
+        vpAdapter.addFragment(TempPostFragment.newInstance(query, 1));
+        vpAdapter.addFragment(TempPostFragment.newInstance(query, 3));
         viewpager.setAdapter(vpAdapter);
         ArrayList<String> fragmentTitle = new ArrayList<>();
         fragmentTitle.add("products");
@@ -89,6 +92,7 @@ public class SearchActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
+                viewModel.selectItem(s);
                 return false;
             }
 

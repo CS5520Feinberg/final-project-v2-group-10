@@ -20,18 +20,22 @@ public class Post {
     public Map<String, Long> replies = new HashMap<>();
     public Long timeStamp;
     public Boolean isActive;
+    public String postId;
+    public Long imgCnt;
 
     public Post() {
 
     }
 
-    public Post(Long type, String userId, String title, String text, Double price) {
+    public Post(Long type, String userId, String title, String text, Double price, String postId, Long cnt) {
         this.type = type;
         this.userId = userId;
         this.title = title;
         this.text = text;
         this.price = price;
         this.isActive = true;
+        this.postId = postId;
+        this.imgCnt = cnt;
     }
 
     public Map<String,Object> toMap() {
@@ -43,6 +47,8 @@ public class Post {
         map.put("price", price);
         map.put("isActive", isActive);
         map.put("timestamp", ServerValue.TIMESTAMP);
+        map.put("postId", postId);
+        map.put("imgCnt", imgCnt);
         if (images.size() > 0) {
             map.put("images", images);
         }

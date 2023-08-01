@@ -85,8 +85,8 @@ public class ProductFragment extends Fragment {
             }
         });
         FSAdapter vpAdapter = new FSAdapter(this);
-        vpAdapter.addFragment(TempPostFragment.newInstance("", "products"));
-        vpAdapter.addFragment(TempPostFragment.newInstance("", "products in need"));
+        vpAdapter.addFragment(TempPostFragment.newInstance("", 0));
+        vpAdapter.addFragment(TempPostFragment.newInstance("", 1));
         viewpager.setAdapter(vpAdapter);
         ArrayList<String> fragmentTitle = new ArrayList<>();
         fragmentTitle.add("I offer");

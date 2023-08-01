@@ -1,17 +1,26 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.post;
 
+import android.util.Log;
+
 import com.google.firebase.firestore.Filter;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 
 public class SearchUtils {
 
     private static int LIMIT = 500;
+    private  static String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
 
     // search without dependency ref:
     // https://levelup.gitconnected.com/firestore-full-text-search-at-no-extra-cost-ee148856685
     public static HashMap<String, Object> triGram(String s) {
+        s = s.toLowerCase(Locale.ROOT);
         HashMap<String, Object> ret = new HashMap<>();
         int cap = Math.min(LIMIT, s.length());
         for (int i = 0; i <= cap - 3; i++) {
@@ -22,15 +31,31 @@ public class SearchUtils {
     }
 
     public static Filter[] generateFilterArr(String s) {
-        LIMIT = 30;
+        LIMIT = 24;
         HashMap<String, Object> rec = triGram(s);
-        Filter ret[] = new Filter[rec.size()];
+        Filter ret[] = new Filter[rec.size() + 1];
         int ptr = 0;
         for (String k : rec.keySet()) {
             ret[ptr++] = Filter.equalTo(k, true);
         }
+        ret[ptr] = Filter.equalTo("isActive", true);
         LIMIT = 500;
         return ret;
+    }
+
+    // generate key in reverse date order
+    public static String generateKey() {
+        Random random = new Random();
+        Calendar cal = Calendar.getInstance();
+        Date cur = cal.getTime();
+        cal.set(5000, 0, 1);
+        Date date1 = cal.getTime();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        String part = String.format(Locale.US,"%032d", date1.getTime() - cur.getTime());
+        return part + sb.toString();
     }
 }
 

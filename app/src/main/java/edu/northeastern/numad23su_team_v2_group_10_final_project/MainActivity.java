@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,11 +23,12 @@ import edu.northeastern.numad23su_team_v2_group_10_final_project.databinding.Act
 import edu.northeastern.numad23su_team_v2_group_10_final_project.message.MessageFragment;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.product.ProductFragment;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.profile.ProfileFragment;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.search.ItemViewModel;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.search.SearchActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.service.ServiceFragment;
 
 public class MainActivity extends AppCompatActivity {
-
+    private ItemViewModel viewModel;
     ActivityMainBinding binding;
     MenuItem searchItem;
     ProductFragment productFragment;
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FinalProjectApplication myApplication = (FinalProjectApplication) getApplicationContext();
+        viewModel = new ViewModelProvider(this).get(ItemViewModel.class);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {

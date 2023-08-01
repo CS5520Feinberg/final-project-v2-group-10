@@ -1,5 +1,6 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.post.create_post;
 
+import static edu.northeastern.numad23su_team_v2_group_10_final_project.post.SearchUtils.generateKey;
 import static edu.northeastern.numad23su_team_v2_group_10_final_project.post.SearchUtils.triGram;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -36,6 +37,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import com.google.firebase.firestore.Filter;
@@ -273,8 +275,8 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
         }
         cnt.set(0);
         progressBar.setVisibility(View.VISIBLE);
-        String key = mDbRef.child("posts").child(postTypes[selPostType]).push().getKey();
-        Post p = new Post(Long.valueOf(selPostType), userId, titleStr, contentStr, priceVal);
+        String key = generateKey();
+        Post p = new Post(Long.valueOf(selPostType), userId, titleStr, contentStr, priceVal, key, Long.valueOf(list.size()));
         Map<String, Object> postMap = p.toMap();
         HashMap<String, Object> updates = new HashMap<>();
         updates.put("/posts/" + postTypes[selPostType] + "/" + key, postMap);
@@ -290,7 +292,10 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
             public void onSuccess(Void unused) {
                 // add data to FireStore (for full text search)
                 // ref: https://levelup.gitconnected.com/firestore-full-text-search-at-no-extra-cost-ee148856685
+                // NOTE: would generate a key related to timestamp
                 Map<String, Object> data = triGram(titleStr + " " + contentStr);
+                data.putAll(postMap);
+                data.put("timestamp", FieldValue.serverTimestamp());
                 mFireStoreRef.collection("posts").document(postTypes[selPostType]).collection("posts").document(key).set(data).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -315,7 +320,10 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
                     }
                 });
 
-
+                if (list.size() == 0) {
+                    progressBar.setVisibility(View.GONE);
+                    finish();
+                }
 
                 // upload images
                 for (int i = 0; i < list.size(); i++) {

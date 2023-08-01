@@ -68,7 +68,7 @@ public class TempPostFragment extends Fragment {
     private FirebaseFirestore mFireStoreRef;
     private DatabaseReference mDbRef;
     private StorageReference mStorageRef;
-    int limit = 4;
+    int limit = 5;
     PostAdapter adapter;
     private DocumentSnapshot lastVisible;
     private boolean isScrolling = false;

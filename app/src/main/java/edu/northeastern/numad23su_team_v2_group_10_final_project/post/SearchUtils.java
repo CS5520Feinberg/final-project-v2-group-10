@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.google.firebase.firestore.Filter;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,15 +48,22 @@ public class SearchUtils {
     // generate key in reverse date order
     public static String generateKey() {
         Random random = new Random();
-        Calendar cal = Calendar.getInstance();
-        Date cur = cal.getTime();
-        cal.set(5000, 0, 1);
-        Date date1 = cal.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+        String dateString = "01-01-5000 12:00:00";
+        long m1 = 0;
+        try {
+            Date date = sdf.parse(dateString);
+            m1 = date.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Date date = new Date();
+        long cur = date.getTime();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 10; i++) {
             sb.append(chars.charAt(random.nextInt(chars.length())));
         }
-        String part = String.format(Locale.US,"%032d", date1.getTime() - cur.getTime());
+        String part = String.format("%016x", m1 - cur);
         return part + sb.toString();
     }
 }

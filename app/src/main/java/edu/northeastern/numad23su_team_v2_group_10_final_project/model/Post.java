@@ -1,5 +1,6 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.model;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.ServerValue;
 
@@ -18,7 +19,7 @@ public class Post {
     public String text;
     public Double price;
     public Map<String, Long> replies = new HashMap<>();
-    public Long timeStamp;
+    public Timestamp timestamp;
     public Boolean isActive;
     public String postId;
     public Long imgCnt;

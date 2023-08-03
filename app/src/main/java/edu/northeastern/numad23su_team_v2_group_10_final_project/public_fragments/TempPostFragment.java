@@ -154,6 +154,12 @@ public class TempPostFragment extends Fragment {
 
         list = new ArrayList<>();
         adapter = new PostAdapter(getContext(),list);
+        adapter.setListener(new PostClickListener() {
+            @Override
+            public void onClick(int position) {
+
+            }
+        });
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
         fetchData(true);

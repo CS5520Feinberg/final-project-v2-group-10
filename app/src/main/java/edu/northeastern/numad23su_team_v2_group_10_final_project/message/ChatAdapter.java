@@ -1,7 +1,6 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.message;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
-import edu.northeastern.numad23su_team_v2_group_10_final_project.ChatActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.ChatMessage;
-import edu.northeastern.numad23su_team_v2_group_10_final_project.util.AndroidUtil;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.util.FirebaseUtil;
 
 public class ChatAdapter extends FirestoreRecyclerAdapter<ChatMessage, ChatAdapter.ChatViewHolder> {
@@ -34,10 +31,12 @@ public class ChatAdapter extends FirestoreRecyclerAdapter<ChatMessage, ChatAdapt
             holder.leftChatLayout.setVisibility(View.GONE);
             holder.rightChatLayout.setVisibility(View.VISIBLE);
             holder.rightChatTextview.setText(model.getMessage());
+            holder.rightChatTextSentTime.setText(FirebaseUtil.timestampToStringTime(model.getTimestamp()));
         } else {
             holder.leftChatLayout.setVisibility(View.VISIBLE);
             holder.rightChatLayout.setVisibility(View.GONE);
             holder.leftChatTextview.setText(model.getMessage());
+            holder.leftChatTextSentTime.setText(FirebaseUtil.timestampToStringTime(model.getTimestamp()));
         }
     }
 
@@ -51,7 +50,7 @@ public class ChatAdapter extends FirestoreRecyclerAdapter<ChatMessage, ChatAdapt
     class ChatViewHolder extends RecyclerView.ViewHolder{
 
         LinearLayout leftChatLayout, rightChatLayout;
-        TextView leftChatTextview, rightChatTextview;
+        TextView leftChatTextview, rightChatTextview, leftChatTextSentTime, rightChatTextSentTime;
 
         public ChatViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -59,7 +58,8 @@ public class ChatAdapter extends FirestoreRecyclerAdapter<ChatMessage, ChatAdapt
             rightChatLayout = itemView.findViewById(R.id.right_chat_layout);
             leftChatTextview = itemView.findViewById(R.id.left_chat_textview);
             rightChatTextview = itemView.findViewById(R.id.right_chat_textview);
-
+            leftChatTextSentTime = itemView.findViewById(R.id.left_chat_sent_time);
+            rightChatTextSentTime = itemView.findViewById(R.id.right_chat_sent_time);
         }
     }
 }

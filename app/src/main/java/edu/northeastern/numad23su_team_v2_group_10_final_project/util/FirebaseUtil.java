@@ -60,8 +60,12 @@ public class FirebaseUtil {
         }
     }
 
-    public static String timestampToString(Timestamp timestamp){
-        return new SimpleDateFormat("HH:MM").format(timestamp.toDate());
+    public static String timestampToStringTime(Timestamp timestamp){
+        return new SimpleDateFormat("HH:mm:ss").format(timestamp.toDate());
+    }
+
+    public static String timestampToStringDate(Timestamp timestamp){
+        return new SimpleDateFormat("yyyy-MM-dd").format(timestamp.toDate());
     }
 
     public static void logout(){

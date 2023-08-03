@@ -78,26 +78,23 @@ public class UsersFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
-        if (usersAdapter!=null){
-            usersAdapter.startListening();
-        }
+        //usersAdapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (usersAdapter!=null){
-            usersAdapter.stopListening();
-        }
+        //if (usersAdapter!=null){
+            //usersAdapter.stopListening();
+        //}
     }
 
     @Override
     public void onResume() {
         searchInput.setText("");
         super.onResume();
-        if (usersAdapter!=null){
-            usersAdapter.startListening();
-        }
+        //if (usersAdapter!=null){
+            //usersAdapter.startListening();
+        //}
     }
 }

@@ -1,5 +1,6 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,9 +21,12 @@ import android.widget.Toast;
 
 import com.github.dhaval2404.imagepicker.ImagePicker;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -96,7 +100,7 @@ public class RegisterActivity extends AppCompatActivity {
                 signupUsername.setError("Username is Required");
                 return;
             }
-            if (TextUtils.isEmpty(email) || !validEmail(email)) {
+            if (TextUtils.isEmpty(email)) {
                 signupEmail.setError("Valid NEU Email is Required");
                 return;
             }
@@ -115,7 +119,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
 
             User newUser = new User(username, email, selectCampus);
-            registerUser(email, password, newUser);
+            registerUser(email, password, newUser, username);
             LoginActivity();
         });
     }
@@ -139,19 +143,22 @@ public class RegisterActivity extends AppCompatActivity {
         imageView.setImageURI(uri);
     }
 
-    private void registerUser(String email, String password, User newUser) {
+    private void registerUser(String email, String password, User newUser, String username) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     FirebaseUser user = mAuth.getCurrentUser();
                     if (task.isSuccessful()) {
+                        updateUserProfile(username);
                         sendEmailVerification();
                     } else {
                         if (user != null && !user.isEmailVerified()) {
+                            updateUserProfile(username);
                             sendEmailVerification();
                         } else {
                             Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
+
                     String userid = user.getUid();
                     mDatabase.child("users").child(userid).setValue(newUser);
                     uploadUserImage(userid);
@@ -181,6 +188,17 @@ public class RegisterActivity extends AppCompatActivity {
         }).addOnSuccessListener(taskSnapshot -> {
             Toast.makeText(RegisterActivity.this, "Upload Image Successfully!", Toast.LENGTH_SHORT).show();
 
+        });
+    }
+
+    private void updateUserProfile(String username) {
+        FirebaseUser user = mAuth.getCurrentUser();
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(username).build();
+        user.updateProfile(profileUpdates).addOnCompleteListener(task1 -> {
+            if (task1.isSuccessful()) {
+                Toast.makeText(RegisterActivity.this, "User Profile Updated", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

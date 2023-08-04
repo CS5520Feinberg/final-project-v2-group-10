@@ -105,10 +105,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void switchToUserTab() {
+        View view = binding.bottomNavigationView.findViewById(R.id.user);
+        view.performClick();
         jumpFromPost = true;
-        showSearch = false;
-        invalidateOptionsMenu();
-        replaceFragment("profile");
     }
 
     @Override

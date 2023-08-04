@@ -2,6 +2,7 @@ package edu.northeastern.numad23su_team_v2_group_10_final_project.post.create_po
 
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Parcel;
@@ -15,6 +16,7 @@ public class UploadImage implements Parcelable {
     public Boolean isSelected;
     public Boolean isInEditMode;
     public Integer width;
+    public Bitmap bitmap;
 
     public UploadImage(String imageUri, String path, int width) {
         this.imageUri = imageUri;

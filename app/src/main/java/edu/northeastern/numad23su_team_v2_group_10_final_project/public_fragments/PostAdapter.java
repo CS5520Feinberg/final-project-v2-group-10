@@ -60,7 +60,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostHolder>{
     public void onBindViewHolder(@NonNull PostHolder holder, int position) {
         Post post = list.get(position);
         holder.title.setText(post.title);
-
         holder.date.setText(new SimpleDateFormat("yyyy-MM-dd").format(post.timestamp.toDate()));
         holder.text.setText(post.text);
         if (post.price > 0.0) holder.price.setText("$" + String.format("%.2f", post.price));

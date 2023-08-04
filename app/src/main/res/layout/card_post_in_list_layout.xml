@@ -75,7 +75,8 @@
             android:textColor="#8A000000"
             app:layout_constraintEnd_toStartOf="@+id/post_image"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/date_text" />
+            app:layout_constraintTop_toBottomOf="@+id/date_text"
+            android:maxLines="3"/>
 
         <ImageView
             android:id="@+id/post_image"

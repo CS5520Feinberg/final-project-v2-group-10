@@ -82,6 +82,7 @@ public class UploadImageActivity extends AppCompatActivity {
                     Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_STORAGE);
         }
         getSupportActionBar().setTitle("select photos");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         fab = findViewById(R.id.addButton);
         recyclerView = findViewById(R.id.recycler_view);
         bottomAppBar = findViewById(R.id.bottomAppBar);
@@ -186,18 +187,9 @@ public class UploadImageActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.upload_image_top, menu);
-        finishItem = menu.findItem(R.id.finish);
-        finishItem.setVisible(!isInEdit);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // for top menu
-        if (item.getItemId() == R.id.finish) {
+       if (item.getItemId() == android.R.id.home) {
             this.onBackPressed();
         }
         return true;

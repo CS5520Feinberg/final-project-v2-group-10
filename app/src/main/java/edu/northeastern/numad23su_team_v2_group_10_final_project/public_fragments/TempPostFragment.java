@@ -1,5 +1,8 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.public_fragments;
 
+import static edu.northeastern.numad23su_team_v2_group_10_final_project.post.Utils.getPostTypes;
+
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,7 +15,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,13 +27,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.Filter;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
@@ -39,10 +37,12 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import edu.northeastern.numad23su_team_v2_group_10_final_project.MainActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.UserViewModel;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.Post;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.post.display_post.DisplayPostActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.post.SearchUtils;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.search.ItemViewModel;
 
@@ -58,7 +58,8 @@ public class TempPostFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    String[] postTypes = {"offerProductPosts", "needProductPosts","offerServicePosts", "needServicePosts"};
+    String[] postTypes = getPostTypes();
+    private UserViewModel userViewModel;
 
     private ItemViewModel viewModel;
     TextView textView;
@@ -146,6 +147,7 @@ public class TempPostFragment extends Fragment {
         textView = view.findViewById(R.id.textView);
         recyclerView = view.findViewById(R.id.recycler_view);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
 
         mAuth = FirebaseAuth.getInstance();
         mDbRef =  FirebaseDatabase.getInstance().getReference();
@@ -157,7 +159,26 @@ public class TempPostFragment extends Fragment {
         adapter.setListener(new PostClickListener() {
             @Override
             public void onClick(int position) {
+                Intent i = new Intent(getActivity(), DisplayPostActivity.class);
+                i.putExtra("postType", postTypes[list.get(position).type.intValue()]);
+                i.putExtra("postId", list.get(position).postId);
+                startActivity(i);
+            }
 
+            @Override
+            public void onAvatarClick(int position) {
+                String userId = list.get(position).userId;
+                String className = getActivity().getClass().getSimpleName();
+                if (className.equals("SearchActivity")) {
+                    //Start main activity
+                    Intent i = new Intent(getActivity(), MainActivity.class);
+                    i.putExtra("USER", userId);
+                    startActivity(i);
+                } else if (className.equals("MainActivity")) {
+                    userViewModel.setUser(userId);
+                    MainActivity main = (MainActivity)getActivity();
+                    main.switchToUserTab();
+                }
             }
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

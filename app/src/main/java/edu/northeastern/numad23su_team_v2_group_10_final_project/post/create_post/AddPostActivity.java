@@ -2,6 +2,7 @@ package edu.northeastern.numad23su_team_v2_group_10_final_project.post.create_po
 
 import static edu.northeastern.numad23su_team_v2_group_10_final_project.post.SearchUtils.generateKey;
 import static edu.northeastern.numad23su_team_v2_group_10_final_project.post.SearchUtils.triGram;
+import static edu.northeastern.numad23su_team_v2_group_10_final_project.post.Utils.getPostTypes;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -21,6 +22,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -80,8 +82,7 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
     ProgressBar progressBar;
 
     //["OfferProduct", "NeedProduct","OfferService", "NeedService"]
-    String[] postTypes = {"offerProductPosts", "needProductPosts","offerServicePosts", "needServicePosts"};
-
+    String[] postTypes = getPostTypes();
     ArrayList<UploadImage> list = new ArrayList<>();
     ActivityResultLauncher<Intent> queryLauncher;
     ImageAdapter adapter;
@@ -98,6 +99,7 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_post);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mAuth = FirebaseAuth.getInstance();
         mDbRef =  FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -400,6 +402,17 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
     public void onBackPressed() {
         exitDialogFragment.show(getSupportFragmentManager(), "exit");
     }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                exitDialogFragment.show(getSupportFragmentManager(), "exit");
+                break;
+        }
+        return true;
+    }
+
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {

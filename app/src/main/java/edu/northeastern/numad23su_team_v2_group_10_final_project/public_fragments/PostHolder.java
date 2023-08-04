@@ -30,5 +30,17 @@ public class PostHolder extends RecyclerView.ViewHolder{
         this.text = itemView.findViewById(R.id.content_text);
         this.price = itemView.findViewById(R.id.price);
         this.postImage = itemView.findViewById(R.id.post_image);
+        postImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onClick(getLayoutPosition());
+            }
+        });
+        avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onAvatarClick(getLayoutPosition());
+            }
+        });
     }
 }

@@ -18,6 +18,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.auth.FirebaseAuth;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.databinding.ActivityMainBinding;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.message.MessageFragment;
@@ -28,7 +29,7 @@ import edu.northeastern.numad23su_team_v2_group_10_final_project.search.SearchAc
 import edu.northeastern.numad23su_team_v2_group_10_final_project.service.ServiceFragment;
 
 public class MainActivity extends AppCompatActivity {
-    private ItemViewModel viewModel;
+    private UserViewModel userViewModel;
     ActivityMainBinding binding;
     MenuItem searchItem;
     ProductFragment productFragment;
@@ -37,14 +38,17 @@ public class MainActivity extends AppCompatActivity {
     ProfileFragment profileFragment;
     String[] tags = {"product", "service", "message", "profile"};
     Boolean showSearch = true;
+    String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FinalProjectApplication myApplication = (FinalProjectApplication) getApplicationContext();
-        viewModel = new ViewModelProvider(this).get(ItemViewModel.class);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        userId = FirebaseAuth.getInstance().getUid();
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        userViewModel.setUser(FirebaseAuth.getInstance().getUid());
         binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -70,10 +74,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         // TODO: Add condition for intent extra
-        if (savedInstanceState == null || !savedInstanceState.containsKey("SEL")) {
-            View view = binding.bottomNavigationView.findViewById(R.id.product);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.containsKey("USER")) {
+            userId = extras.getString("USER");
+            userViewModel.setUser(userId);
+            View view = binding.bottomNavigationView.findViewById(R.id.user);
             view.performClick();
+        } else {
+            if (savedInstanceState == null || !savedInstanceState.containsKey("SEL")) {
+                View view = binding.bottomNavigationView.findViewById(R.id.product);
+                view.performClick();
+            }
         }
+    }
+
+    @Override
+    protected void onNewIntent (Intent intent) {
+        // return to main activity and check if it is a user profile callback
+        super.onNewIntent(intent);
+        Bundle extras = intent.getExtras();
+        if (extras != null && extras.containsKey("USER")) {
+            userId = extras.getString("USER");
+            userViewModel.setUser(userId);
+            View view = binding.bottomNavigationView.findViewById(R.id.user);
+
+        }
+    }
+
+    public void switchToUserTab() {
+        View view = binding.bottomNavigationView.findViewById(R.id.user);
+        view.performClick();
     }
 
     @Override

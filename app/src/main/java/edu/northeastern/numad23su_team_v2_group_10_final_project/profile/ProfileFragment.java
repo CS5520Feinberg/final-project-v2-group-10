@@ -77,15 +77,10 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         userIdView = view.findViewById(R.id.user_id);
         userViewModel = new ViewModelProvider(getActivity()).get(UserViewModel.class);
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         userViewModel.getUser().observe(getViewLifecycleOwner(), userId -> {
             // update UI here
             userIdView.setText(userId);
         });
+
     }
 }

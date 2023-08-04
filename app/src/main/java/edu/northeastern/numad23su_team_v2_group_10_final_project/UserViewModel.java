@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 public class UserViewModel extends ViewModel {
     private final MutableLiveData<String> selectedItem = new MutableLiveData<String>();
-    private final  MutableLiveData<Boolean> trigger = new MutableLiveData<Boolean>();
+    private final  MutableLiveData<String> lastTab = new MutableLiveData<String>();
 
     public void setUser(String item) {
         selectedItem.setValue(item);
@@ -16,6 +16,14 @@ public class UserViewModel extends ViewModel {
 
     public LiveData<String> getUser() {
         return selectedItem;
+    }
+
+    public  LiveData<String> getLastTab() {
+        return lastTab;
+    }
+
+    public void setLastTab(String item) {
+        lastTab.setValue(item);
     }
 }
 

@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     String[] tags = {"product", "service", "message", "profile"};
     Boolean showSearch = true;
     String userId;
+    boolean jumpFromPost = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                jumpFromPost = false;
                 int id = item.getItemId();
                 if (id == R.id.product) {
                     showSearch = true;
@@ -98,13 +100,15 @@ public class MainActivity extends AppCompatActivity {
             userId = extras.getString("USER");
             userViewModel.setUser(userId);
             View view = binding.bottomNavigationView.findViewById(R.id.user);
-
+            view.performClick();
         }
     }
 
     public void switchToUserTab() {
-        View view = binding.bottomNavigationView.findViewById(R.id.user);
-        view.performClick();
+        jumpFromPost = true;
+        showSearch = false;
+        invalidateOptionsMenu();
+        replaceFragment("profile");
     }
 
     @Override
@@ -178,5 +182,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putInt("SEL", binding.bottomNavigationView.getSelectedItemId());
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (jumpFromPost) {
+            String lastTab = userViewModel.getLastTab().getValue();
+            if (lastTab.equals("ProductFragment")) {
+                View view = binding.bottomNavigationView.findViewById(R.id.product);
+                view.performClick();
+            } else if (lastTab.equals("ServiceFragment")) {
+                View view = binding.bottomNavigationView.findViewById(R.id.service);
+                view.performClick();
+            }
+        } else {
+            finish();
+        }
     }
 }

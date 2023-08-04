@@ -123,22 +123,6 @@ public class TempPostFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        viewModel.getSelectedItem().observe(getViewLifecycleOwner(), item -> {
-            if (!query.equals(item)) {
-                query = item;
-                fetchData(true);
-            }
-        });
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
     // binding is here
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -176,6 +160,7 @@ public class TempPostFragment extends Fragment {
                     startActivity(i);
                 } else if (className.equals("MainActivity")) {
                     userViewModel.setUser(userId);
+                    userViewModel.setLastTab(getParentFragment().getClass().getSimpleName());
                     MainActivity main = (MainActivity)getActivity();
                     main.switchToUserTab();
                 }
@@ -224,7 +209,12 @@ public class TempPostFragment extends Fragment {
             }
         };
         recyclerView.addOnScrollListener(onScrollListener);
-
+        viewModel.getSelectedItem().observe(getViewLifecycleOwner(), item -> {
+            if (!query.equals(item)) {
+                query = item;
+                fetchData(true);
+            }
+        });
     }
 
     private void fetchData(boolean clear) {

@@ -1,14 +1,26 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.profile;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+
+import edu.northeastern.numad23su_team_v2_group_10_final_project.LogInActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.UserViewModel;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.search.ItemViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,6 +29,8 @@ import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
  */
 public class ProfileFragment extends Fragment {
 
+    private UserViewModel userViewModel;
+    private TextView userIdView;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -25,6 +39,11 @@ public class ProfileFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private Button logoutBtn;
+
+
+    Activity logout;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -61,6 +80,29 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_profile, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+//        userIdView = view.findViewById(R.id.user_id);
+//        userViewModel = new ViewModelProvider(getActivity()).get(UserViewModel.class);
+//        userViewModel.getUser().observe(getViewLifecycleOwner(), userId -> {
+//            // update UI here
+//            userIdView.setText(userId);
+//        });
+        logout = getActivity();
+
+    }
+
+    public void onStart() {
+        super.onStart();
+        Button logoutBtn = logout.findViewById(R.id.logoutBtn);
+        logoutBtn.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(logout, LogInActivity.class);
+            startActivity(intent);
+        });
     }
 }

@@ -13,11 +13,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
@@ -51,16 +60,29 @@ public class PostAdapter extends RecyclerView.Adapter<PostHolder>{
     public void onBindViewHolder(@NonNull PostHolder holder, int position) {
         Post post = list.get(position);
         holder.title.setText(post.title);
-        holder.userId.setText("by " + post.userId);
+        holder.date.setText(new SimpleDateFormat("yyyy-MM-dd").format(post.timestamp.toDate()));
         holder.text.setText(post.text);
         if (post.price > 0.0) holder.price.setText("$" + String.format("%.2f", post.price));
-        if (post.imgCnt == null || post.imgCnt == 0) {
-            holder.postImage.setImageResource(R.drawable.ic_image_default);
-            return;
-        }
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images")
-                .child(postTypes[post.type.intValue()]).child(post.postId).child("small").child("000.jpg");
-        storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        // get user name and avatar
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users").child(post.userId).child("name");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.getValue() != null) {
+                    holder.userName.setText(snapshot.getValue().toString());
+                } else {
+                    holder.userName.setText("anonymous");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        StorageReference storageRef1 = FirebaseStorage.getInstance().getReference().child("images")
+                .child("avatar").child(post.userId).child("000.jpg");
+        storageRef1.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 Glide.with(context)
@@ -68,19 +90,47 @@ public class PostAdapter extends RecyclerView.Adapter<PostHolder>{
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)         //ALL or NONE as your requirement
                         .thumbnail(Glide.with(context).load(R.drawable.ic_image_loading))
-                        .error(R.drawable.ic_image_default)
-                        .into(holder.postImage);
+                        .error(R.drawable.ic_grey_person_24)
+                        .into(holder.avatar);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onFailure(@NonNull Exception exception) {
+            public void onFailure(@NonNull Exception e) {
                 // Handle any errors
                 Glide.with(context)
-                        .load(R.drawable.ic_image_default)
+                        .load(R.drawable.ic_grey_person_24)
                         .fitCenter()
-                        .into(holder.postImage);
+                        .into(holder.avatar);
             }
         });
+        if (post.imgCnt == null || post.imgCnt == 0) {
+            holder.postImage.setImageResource(R.drawable.ic_image_default);
+        } else {
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images")
+                    .child(postTypes[post.type.intValue()]).child(post.postId).child("small").child("000.jpg");
+            storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Glide.with(context)
+                            .load(uri)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)         //ALL or NONE as your requirement
+                            .thumbnail(Glide.with(context).load(R.drawable.ic_image_loading))
+                            .error(R.drawable.ic_image_default)
+                            .into(holder.postImage);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                    Glide.with(context)
+                            .load(R.drawable.ic_image_default)
+                            .fitCenter()
+                            .into(holder.postImage);
+                }
+            });
+        }
+
     }
 
     @Override

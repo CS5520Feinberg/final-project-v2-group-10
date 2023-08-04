@@ -8,7 +8,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/user_id" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -139,7 +140,7 @@
                         android:textStyle="bold" />
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/signupBtn"
+                        android:id="@+id/logoutBtn"
                         android:layout_width="160dp"
                         android:layout_height="50dp"
                         android:layout_below="@id/chats"
@@ -151,10 +152,6 @@
                         android:text="Logout" />
 
                 </LinearLayout>
-
-
-
-
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </ScrollView>

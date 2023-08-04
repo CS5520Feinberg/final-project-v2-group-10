@@ -217,4 +217,9 @@ public class Utils {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
 
+    public static String[] getPostTypes() {
+        String[] postTypes = {"offerProductPosts", "needProductPosts","offerServicePosts", "needServicePosts"};
+        return postTypes;
+    }
+
 }

@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.github.dhaval2404.imagepicker.ImagePicker;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -44,6 +45,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     ArrayAdapter<String> adapterCampus;
     Button signupBtn;
+
+    FloatingActionButton floatingActionButton;
     FirebaseAuth mAuth;
 
     private DatabaseReference mDatabase;
@@ -69,10 +72,11 @@ public class RegisterActivity extends AppCompatActivity {
         adapterCampus = new ArrayAdapter<>(this, R.layout.list_campus, campus);
         autoCompleteTextView.setAdapter(adapterCampus);
         imageView = findViewById(R.id.imageView);
+        floatingActionButton = findViewById(R.id.floatingActionButton);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        imageView.setOnClickListener(v -> {
+        floatingActionButton.setOnClickListener(v -> {
             ImagePicker.with(this)
                     .crop()	    			//Crop image(Optional), Check Customization for more option
                     .compress(1024)			//Final image size will be less than 1 MB(Optional)

@@ -1,7 +1,11 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.profile;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,9 +17,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.io.File;
+import java.io.IOException;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.LogInActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
@@ -31,6 +47,11 @@ public class ProfileFragment extends Fragment {
 
     private UserViewModel userViewModel;
     private TextView userIdView;
+    private TextView userName;
+    private TextView userEmail;
+
+    private FirebaseAuth mAuth;
+    private ImageView userImage;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -39,9 +60,6 @@ public class ProfileFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
-    private Button logoutBtn;
-
 
     Activity logout;
 
@@ -93,6 +111,29 @@ public class ProfileFragment extends Fragment {
 //            userIdView.setText(userId);
 //        });
         logout = getActivity();
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        userName = view.findViewById(R.id.userName);
+        userEmail = view.findViewById(R.id.userEmail);
+        userName.setText(user.getDisplayName());
+        userEmail.setText(user.getEmail());
+
+        userImage = view.findViewById(R.id.userImage);
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        String path = "images/avatar/" + user.getUid() + "/000.jpg";
+        StorageReference storageRef = storage.getReference(path);
+        try {
+            File localfile = File.createTempFile("tempfile", ".jpg");
+            storageRef.getFile(localfile)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        Bitmap bitmap = BitmapFactory.decodeFile(localfile.getAbsolutePath());
+                        userImage.setImageBitmap(bitmap);
+                    }).addOnFailureListener(e -> Toast.makeText(logout, e.getMessage(), Toast.LENGTH_SHORT).show());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
     }
 
@@ -105,4 +146,5 @@ public class ProfileFragment extends Fragment {
             startActivity(intent);
         });
     }
+
 }

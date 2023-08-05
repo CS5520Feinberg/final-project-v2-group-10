@@ -149,11 +149,11 @@ public class RegisterActivity extends AppCompatActivity {
                     FirebaseUser user = mAuth.getCurrentUser();
                     if (task.isSuccessful()) {
                         updateUserProfile(username);
-                        sendEmailVerification();
+                        sendEmailVerification(user);
                     } else {
                         if (user != null && !user.isEmailVerified()) {
                             updateUserProfile(username);
-                            sendEmailVerification();
+                            sendEmailVerification(user);
                         } else {
                             Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
@@ -165,8 +165,7 @@ public class RegisterActivity extends AppCompatActivity {
                 });
     }
 
-    private void sendEmailVerification() {
-        final FirebaseUser user = mAuth.getCurrentUser();
+    private void sendEmailVerification(FirebaseUser user) {
         user.sendEmailVerification()
                 .addOnCompleteListener(task -> Toast.makeText(RegisterActivity.this, "Please check your email for verifying", Toast.LENGTH_SHORT).show());
     }

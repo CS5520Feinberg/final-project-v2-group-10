@@ -1,5 +1,7 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.profile;
 
+import static android.content.ContentValues.TAG;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +29,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -33,9 +41,11 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.io.IOException;
 
+import edu.northeastern.numad23su_team_v2_group_10_final_project.AccountSettingsActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.LogInActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.UserViewModel;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.search.ItemViewModel;
 
 /**
@@ -47,6 +57,8 @@ public class ProfileFragment extends Fragment {
 
     private UserViewModel userViewModel;
     private TextView userIdView;
+    private Button accountSettingButton;
+
     private TextView userName;
     private TextView userEmail;
 
@@ -92,6 +104,7 @@ public class ProfileFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
@@ -113,11 +126,38 @@ public class ProfileFragment extends Fragment {
         logout = getActivity();
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
 
-        userName = view.findViewById(R.id.userName);
-        userEmail = view.findViewById(R.id.userEmail);
-        userName.setText(user.getDisplayName());
-        userEmail.setText(user.getEmail());
+            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+            DatabaseReference userRef = mDatabase.child("users").child(userId);
+            userRef.addValueEventListener(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    User dbuser = snapshot.getValue(User.class);
+                    if (dbuser != null) {
+                        Log.d(TAG, "User name: " + dbuser.getName());
+                        userName = view.findViewById(R.id.userName);
+                        userEmail = view.findViewById(R.id.userEmail);
+                        userName.setText(dbuser.getName());
+                        userEmail.setText(dbuser.getEmail());
+
+                    } else {
+                        Log.w(TAG, "No user data found.");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.w(TAG, "Failed to read value.", error.toException());
+                }
+            });
+        } else {
+            Log.d(TAG, "No current user.");
+        }
+
+
 
         userImage = view.findViewById(R.id.userImage);
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -134,6 +174,15 @@ public class ProfileFragment extends Fragment {
             throw new RuntimeException(e);
         }
 
+
+        accountSettingButton = view.findViewById(R.id.accountSetting);
+        accountSettingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), AccountSettingsActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 

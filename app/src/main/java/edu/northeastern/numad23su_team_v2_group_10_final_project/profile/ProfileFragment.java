@@ -36,6 +36,7 @@ import java.io.IOException;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.LogInActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.UserViewModel;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.post.display_post.DisplayUserPostsActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.search.ItemViewModel;
 
 /**
@@ -60,7 +61,7 @@ public class ProfileFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    private Button userPostsBtn;
     Activity logout;
 
     public ProfileFragment() {
@@ -133,6 +134,15 @@ public class ProfileFragment extends Fragment {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        userPostsBtn = view.findViewById(R.id.userPosts);
+        userPostsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), DisplayUserPostsActivity.class);
+                startActivity(intent);
+            }
+        });
 
 
     }

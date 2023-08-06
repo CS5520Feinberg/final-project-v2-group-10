@@ -99,6 +99,7 @@ public class DisplayPostActivity extends AppCompatActivity {
 
     int width = 0;
     Post post;
+    String postUserId;
     List<UploadImage> list = new ArrayList<>();
     List<Reply> replies = new ArrayList<>();
     AtomicInteger cnt = new AtomicInteger(0);
@@ -156,6 +157,13 @@ public class DisplayPostActivity extends AppCompatActivity {
         pager2 = findViewById(R.id.view_pager);
         adapter = new ImageAdapterPager(getApplicationContext(), list);
         pager2.setAdapter(adapter);
+
+        btn_chat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // mAuth and postUserId
+            }
+        });
 
 
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -431,6 +439,7 @@ public class DisplayPostActivity extends AppCompatActivity {
                     btn_deactivate.setVisibility(View.GONE);
                     btn_edit.setVisibility(View.GONE);
                 }
+                postUserId = post.userId;
                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users").child(post.userId).child("name");
                 ref.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override

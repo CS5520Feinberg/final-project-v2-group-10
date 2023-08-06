@@ -90,6 +90,14 @@
                 android:value="" />
         </activity>
 
+        <activity
+            android:name=".post.display_post.DisplayUserPostsActivity"
+            android:exported="true">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

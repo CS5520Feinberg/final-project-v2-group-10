@@ -412,6 +412,7 @@ public class DisplayPostActivity extends AppCompatActivity {
                                     }
                                     for (DocumentSnapshot document: task.getResult()) {
                                         Reply reply = document.toObject(Reply.class);
+                                        reply.replyList = new ArrayList<>();
                                         replies.get(finalIndex).replyList.add(reply);
                                     }
                                     Collections.sort(replies.get(finalIndex).replyList, (a, b) -> {
@@ -568,6 +569,7 @@ public class DisplayPostActivity extends AppCompatActivity {
                         replies.get(source).replyList.clear();
                         for (DocumentSnapshot document: task.getResult()) {
                             Reply reply = document.toObject(Reply.class);
+                            reply.replyList = new ArrayList<>();
                             replies.get(source).replyList.add(reply);
                         }
                         Collections.sort(replies.get(source).replyList, (a, b) -> {

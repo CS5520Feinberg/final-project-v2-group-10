@@ -16,8 +16,6 @@ import java.util.ArrayList;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.public_fragments.FSAdapter;
-import edu.northeastern.numad23su_team_v2_group_10_final_project.public_fragments.PostFragment;
-
 
 
 public class MessageFragment extends Fragment {

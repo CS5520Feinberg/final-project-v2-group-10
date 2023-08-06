@@ -73,8 +73,8 @@ public class ServiceFragment extends Fragment {
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);
         ViewPager2 viewpager = view.findViewById(R.id.view_pager);
         FSAdapter vpAdapter = new FSAdapter(this);
-        vpAdapter.addFragment(TempPostFragment.newInstance("", 2));
-        vpAdapter.addFragment(TempPostFragment.newInstance("", 3));
+        vpAdapter.addFragment(TempPostFragment.newInstance("", 2, false));
+        vpAdapter.addFragment(TempPostFragment.newInstance("", 3, false));
         viewpager.setAdapter(vpAdapter);
         ArrayList<String> fragmentTitle = new ArrayList<>();
         fragmentTitle.add("I offer");

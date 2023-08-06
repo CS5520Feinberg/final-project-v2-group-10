@@ -40,10 +40,10 @@ public class SearchActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         ViewPager2 viewpager = findViewById(R.id.view_pager);
         FSAdapter vpAdapter = new FSAdapter(this);
-        vpAdapter.addFragment(TempPostFragment.newInstance(query, 0));
-        vpAdapter.addFragment(TempPostFragment.newInstance(query, 2));
-        vpAdapter.addFragment(TempPostFragment.newInstance(query, 1));
-        vpAdapter.addFragment(TempPostFragment.newInstance(query, 3));
+        vpAdapter.addFragment(TempPostFragment.newInstance(query, 0, false));
+        vpAdapter.addFragment(TempPostFragment.newInstance(query, 2, false));
+        vpAdapter.addFragment(TempPostFragment.newInstance(query, 1, false));
+        vpAdapter.addFragment(TempPostFragment.newInstance(query, 3, false));
         viewpager.setAdapter(vpAdapter);
         ArrayList<String> fragmentTitle = new ArrayList<>();
         fragmentTitle.add("products");

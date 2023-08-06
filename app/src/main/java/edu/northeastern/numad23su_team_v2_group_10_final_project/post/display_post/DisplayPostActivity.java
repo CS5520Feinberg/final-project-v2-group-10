@@ -1,6 +1,5 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.post.display_post;
 
-import static edu.northeastern.numad23su_team_v2_group_10_final_project.post.Utils.getPath;
 import static edu.northeastern.numad23su_team_v2_group_10_final_project.post.Utils.getPostTypes;
 
 import androidx.annotation.NonNull;
@@ -19,14 +18,12 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,7 +37,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.stfalcon.imageviewer.StfalconImageViewer;
 
 import java.text.SimpleDateFormat;
@@ -50,8 +46,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.Post;
-import edu.northeastern.numad23su_team_v2_group_10_final_project.post.Utils;
-import edu.northeastern.numad23su_team_v2_group_10_final_project.post.create_post.ImageAdapter;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.post.create_post.ImageClickListener;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.post.create_post.UploadImage;
 

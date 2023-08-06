@@ -1,9 +1,12 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -18,11 +21,19 @@ import android.widget.Toast;
 
 import com.github.dhaval2404.imagepicker.ImagePicker;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.regex.Pattern;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.util.FirebaseUtil;
@@ -39,6 +50,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     ArrayAdapter<String> adapterCampus;
     Button signupBtn;
+
+    FloatingActionButton floatingActionButton;
     FirebaseAuth mAuth;
 
     private DatabaseReference mDatabase;
@@ -64,17 +77,13 @@ public class RegisterActivity extends AppCompatActivity {
         adapterCampus = new ArrayAdapter<>(this, R.layout.list_campus, campus);
         autoCompleteTextView.setAdapter(adapterCampus);
         imageView = findViewById(R.id.imageView);
+        floatingActionButton = findViewById(R.id.floatingActionButton);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        autoCompleteTextView.setOnItemClickListener((parent, view, position, id) -> {
-            String campusItem = adapterCampus.getItem(position);
-            Toast.makeText(RegisterActivity.this, "Item" + campusItem, Toast.LENGTH_SHORT).show();
-        });
-
-        imageView.setOnClickListener(v -> {
+        floatingActionButton.setOnClickListener(v -> {
             ImagePicker.with(this)
-                    .crop()	    			//Crop image(Optional), Check Customization for more option
+                    .crop()//Crop image(Optional), Check Customization for more option
                     .compress(1024)			//Final image size will be less than 1 MB(Optional)
                     .maxResultSize(1080, 1080)	//Final image resolution will be less than 1080 x 1080(Optional)
                     .start();
@@ -112,7 +121,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             String userId = mAuth.getCurrentUser().getUid();
             User newUser = new User(userId, username, email, selectCampus);
-            registerUser(email, password, newUser);
+            registerUser(email, password, newUser, username);
             LoginActivity();
         });
     }
@@ -136,22 +145,26 @@ public class RegisterActivity extends AppCompatActivity {
         imageView.setImageURI(uri);
     }
 
-    private void registerUser(String email, String password, User newUser) {
+    private void registerUser(String email, String password, User newUser, String username) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     FirebaseUser user = mAuth.getCurrentUser();
                     if (task.isSuccessful()) {
+                        updateUserProfile(username);
                         sendEmailVerification();
                     } else {
                         if (user != null && !user.isEmailVerified()) {
+                            updateUserProfile(username);
                             sendEmailVerification();
                         } else {
                             Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
+
                     String userid = user.getUid();
                     mDatabase.child("users").child(userid).setValue(newUser);
                     FirebaseUtil.currentUserDetails().set(newUser);
+                    uploadUserImage(userid);
                 });
     }
 
@@ -159,5 +172,36 @@ public class RegisterActivity extends AppCompatActivity {
         final FirebaseUser user = mAuth.getCurrentUser();
         user.sendEmailVerification()
                 .addOnCompleteListener(task -> Toast.makeText(RegisterActivity.this, "Please check your email for verifying", Toast.LENGTH_SHORT).show());
+    }
+
+    private void uploadUserImage(String userid) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        String path = "images/avatar/" + userid + "/000.jpg";
+        StorageReference avatarRef = storageRef.child(path);
+
+        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = avatarRef.putBytes(data);
+        uploadTask.addOnFailureListener(exception -> {
+            Toast.makeText(RegisterActivity.this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+        }).addOnSuccessListener(taskSnapshot -> {
+            Toast.makeText(RegisterActivity.this, "Upload Image Successfully!", Toast.LENGTH_SHORT).show();
+
+        });
+    }
+
+    private void updateUserProfile(String username) {
+        FirebaseUser user = mAuth.getCurrentUser();
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(username).build();
+        user.updateProfile(profileUpdates).addOnCompleteListener(task1 -> {
+            if (task1.isSuccessful()) {
+                Toast.makeText(RegisterActivity.this, "User Profile Updated", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

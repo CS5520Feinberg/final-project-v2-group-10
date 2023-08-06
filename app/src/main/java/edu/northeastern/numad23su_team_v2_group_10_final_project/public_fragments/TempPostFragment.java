@@ -84,6 +84,8 @@ public class TempPostFragment extends Fragment {
 
     private SwipeRefreshLayout swipeContainer;
 
+    private Boolean showCurrentUserPostsOnly = false;
+
     public TempPostFragment() {
         // Required empty public constructor
     }
@@ -97,11 +99,12 @@ public class TempPostFragment extends Fragment {
      * @return A new instance of fragment TempPostFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static TempPostFragment newInstance(String param1, Integer param2) {
+    public static TempPostFragment newInstance(String param1, Integer param2, Boolean showCurrentUserPostsOnly) {
         TempPostFragment fragment = new TempPostFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putInt(ARG_PARAM2, param2);
+        args.putBoolean("showCurrentUserPostsOnly", showCurrentUserPostsOnly);
         fragment.setArguments(args);
         return fragment;
     }
@@ -127,6 +130,10 @@ public class TempPostFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        if (getArguments() != null) {
+            showCurrentUserPostsOnly = getArguments().getBoolean("showCurrentUserPostsOnly");
+        }
         viewModel = new ViewModelProvider(requireActivity()).get(ItemViewModel.class);
         textView = view.findViewById(R.id.textView);
         recyclerView = view.findViewById(R.id.recycler_view);
@@ -139,7 +146,7 @@ public class TempPostFragment extends Fragment {
         mFireStoreRef = FirebaseFirestore.getInstance();
 
         list = new ArrayList<>();
-        adapter = new PostAdapter(getContext(),list);
+        adapter = new PostAdapter(getContext(), list);
         adapter.setListener(new PostClickListener() {
             @Override
             public void onClick(int position) {
@@ -168,14 +175,14 @@ public class TempPostFragment extends Fragment {
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
-        fetchData(true);
+        fetchData(true, showCurrentUserPostsOnly);
         // Add pull recycler view to refresh function
         // Lookup the swipe container view
 
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                fetchData(true);
+                fetchData(true, showCurrentUserPostsOnly);
             }
         });
         // Configure the refreshing colors
@@ -204,7 +211,7 @@ public class TempPostFragment extends Fragment {
 
                 if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
                     isScrolling = false;
-                    fetchData(false);
+                    fetchData(false, showCurrentUserPostsOnly);
                 }
             }
         };
@@ -212,29 +219,46 @@ public class TempPostFragment extends Fragment {
         viewModel.getSelectedItem().observe(getViewLifecycleOwner(), item -> {
             if (!query.equals(item)) {
                 query = item;
-                fetchData(true);
+                fetchData(true, showCurrentUserPostsOnly);
             }
         });
     }
 
-    private void fetchData(boolean clear) {
+    private void fetchData(boolean clear, boolean getUserPosts) {
+        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         swipeContainer.setRefreshing(true);
         Query q;
         CollectionReference ref = mFireStoreRef.collection("posts").document(postTypes[postType]).collection("posts") ;
         if (clear) {
             if (query.length() == 0) {
-                q = ref.whereEqualTo("isActive", true).orderBy("timestamp", Query.Direction.DESCENDING).limit(limit);
+                q = ref.whereEqualTo("isActive", true);
+                if (getUserPosts) {
+                    q = q.whereEqualTo("userId", currentUserId);
+                }
+                q = q.orderBy("timestamp", Query.Direction.DESCENDING).limit(limit);
             } else {
-                q = ref.where(Filter.and(SearchUtils.generateFilterArr(query)))
-                        .limit(limit);
+                q = ref.where(Filter.and(SearchUtils.generateFilterArr(query)));
+
+                if (getUserPosts) {
+                    q = q.whereEqualTo("userId", currentUserId);
+                }
+                q = q.limit(limit);
             }
         } else {
             if (query.length() == 0) {
-                q = ref.whereEqualTo("isActive", true).orderBy("timestamp", Query.Direction.DESCENDING);
+                q = ref.whereEqualTo("isActive", true);
+                if (getUserPosts) {
+                    q = q.whereEqualTo("userId", currentUserId);
+                }
+                q = q.orderBy("timestamp", Query.Direction.DESCENDING);
                 if (lastVisible != null) q = q.startAfter(lastVisible).limit(limit);
                 else q = q.limit(limit);
             } else {
                 q = ref.where(Filter.and(SearchUtils.generateFilterArr(query)));
+                if (getUserPosts) {
+                    q = q.whereEqualTo("userId", currentUserId);
+                }
                 if (lastVisible != null) q = q.startAfter(lastVisible).limit(limit);
                 else q = q.limit(limit);
             }

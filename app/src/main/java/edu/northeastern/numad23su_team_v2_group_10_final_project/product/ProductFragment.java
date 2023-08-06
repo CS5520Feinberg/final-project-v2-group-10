@@ -38,6 +38,8 @@ public class ProductFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private Boolean showCurrentUserPostsOnly = false;
+
     public ProductFragment() {
         // Required empty public constructor
     }
@@ -73,20 +75,35 @@ public class ProductFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        if (getArguments() != null) {
+            showCurrentUserPostsOnly = getArguments().getBoolean("showCurrentUserPostsOnly");
+        }
         View view = inflater.inflate(R.layout.fragment_product, container, false);
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);
         ViewPager2 viewpager = view.findViewById(R.id.view_pager);
         fab = view.findViewById(R.id.addButton);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getActivity(), AddPostActivity.class);
-                startActivity(i);
-            }
-        });
+        if (showCurrentUserPostsOnly) {
+            fab.setVisibility(View.GONE);
+        } else {
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(getActivity(), AddPostActivity.class);
+                    startActivity(i);
+                }
+            });
+        }
+
         FSAdapter vpAdapter = new FSAdapter(this);
-        vpAdapter.addFragment(TempPostFragment.newInstance("", 0));
-        vpAdapter.addFragment(TempPostFragment.newInstance("", 1));
+        Bundle args = new Bundle();
+        args.putBoolean("showCurrentUserPostsOnly", showCurrentUserPostsOnly);
+
+        Fragment tempPostFrag0 = TempPostFragment.newInstance("", 0, showCurrentUserPostsOnly);
+        Fragment tempPostFrag1 = TempPostFragment.newInstance("", 1, showCurrentUserPostsOnly);
+
+        vpAdapter.addFragment(tempPostFrag0);
+        vpAdapter.addFragment(tempPostFrag1);
         viewpager.setAdapter(vpAdapter);
         ArrayList<String> fragmentTitle = new ArrayList<>();
         fragmentTitle.add("I offer");

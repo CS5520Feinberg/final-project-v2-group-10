@@ -40,7 +40,7 @@ public class Reply {
         map.put("text", text);
         map.put("postId", postId);
         map.put("timestamp", FieldValue.serverTimestamp());
-        if (replyRootId != null) map.put("replyRoodId", replyRootId);
+        if (replyRootId != null) map.put("replyRootId", replyRootId);
         if (replyToUserId != null) map.put("replyToUserId", replyToUserId);
         if (replyId != null) map.put("replyId", replyId);
         return map;

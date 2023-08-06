@@ -20,14 +20,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,7 +57,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -140,6 +137,7 @@ public class DisplayPostActivity extends AppCompatActivity {
         replyViewModel.setReplyRootId("");
         replyViewModel.setReplyToUserId("");
         replyViewModel.setTrigger(true);
+        replyViewModel.setIndex(-1);
 
         btn_chat = findViewById(R.id.btn_chat);
         btn_deactivate = findViewById(R.id.btn_deactivate);
@@ -201,7 +199,7 @@ public class DisplayPostActivity extends AppCompatActivity {
         };
         adapter.setListener(listener);
 
-        replyOuterAdapter = new ReplyOuterAdapter(this, replies, replyViewModel);
+        replyOuterAdapter = new ReplyOuterAdapter(this, replies, replyViewModel, -1);
         recyclerView.setLayoutManager(new WrapContentLinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
         //recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(replyOuterAdapter);
@@ -314,7 +312,10 @@ public class DisplayPostActivity extends AppCompatActivity {
                             replyViewModel.setReplyToUserId("");
                             replyViewModel.setReplyRootId("");
                             replyViewModel.setReplyToName("");
+                            tv_reply_to.setText("");
+                            tv_reply_to.setVisibility(View.GONE);
                             comment.setText("");
+                            fetchReplySingle(replyId, true, -1);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -329,6 +330,7 @@ public class DisplayPostActivity extends AppCompatActivity {
                     Reply reply = new Reply(replyId, postId, userId, text);
                     reply.replyRootId = replyRootId;
                     reply.replyToUserId = replyViewModel.getReplyToUserId().getValue();
+                    int source = replyViewModel.getIndex().getValue();
 
                     documentReference.collection("replies").document(replyRootId).collection("replies").document(replyId).set(reply.toMap())
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -337,7 +339,10 @@ public class DisplayPostActivity extends AppCompatActivity {
                                     replyViewModel.setReplyToUserId("");
                                     replyViewModel.setReplyRootId("");
                                     replyViewModel.setReplyToName("");
+                                    tv_reply_to.setText("");
+                                    tv_reply_to.setVisibility(View.GONE);
                                     comment.setText("");
+                                    fetchReplySingle(replyId, false, source); // index is set
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -380,20 +385,23 @@ public class DisplayPostActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     replies.clear();
+                    replyOuterAdapter.notifyDataSetChanged();
                 }
                 int index = -1;
                 for (DocumentSnapshot document : task.getResult()) {
                     index++;
                     Reply reply = document.toObject(Reply.class);
+                    reply.replyList = new ArrayList<>();
                     replies.add(reply);
-                    replyOuterAdapter.notifyDataSetChanged();
                     int finalIndex = index;
+                    replyOuterAdapter.notifyItemInserted(finalIndex);
                     documentReference.collection("replies").document(reply.replyId).collection("replies")
                                     .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    if (!task.isSuccessful()) return;
-                                    replies.get(finalIndex).replyList = new ArrayList<>();
+                                    if (!task.isSuccessful()) {
+                                        return;
+                                    }
                                     for (DocumentSnapshot document: task.getResult()) {
                                         Reply reply = document.toObject(Reply.class);
                                         replies.get(finalIndex).replyList.add(reply);
@@ -476,6 +484,7 @@ public class DisplayPostActivity extends AppCompatActivity {
                 text.setText(post.text);
                 if (post != null && post.imgCnt != null && post.imgCnt > 0) {
                     // fetch images
+                    pager2.setVisibility(View.VISIBLE);
                     list.clear();
                     for (int i = 0; i < post.imgCnt; i++) {
                         Resources resources = getApplicationContext().getResources();
@@ -525,6 +534,43 @@ public class DisplayPostActivity extends AppCompatActivity {
         });
     }
 
+    private void fetchReplySingle(String replyId, Boolean isInOuter, int source) {
+        if (isInOuter) {
+            DocumentReference ref = documentReference.collection("replies").document(replyId);
+            ref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot documentSnapshot = task.getResult();
+                        Reply reply = documentSnapshot.toObject(Reply.class);
+                        reply.replyList = new ArrayList<>();
+                        replies.add(0, reply);
+                        replyOuterAdapter.notifyItemInserted(0);
+                    }
+                }
+            });
+        } else {
+            CollectionReference ref = documentReference.collection("replies").document(replies.get(source).replyId)
+                    .collection("replies");
+            ref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        replies.get(source).replyList.clear();
+                        for (DocumentSnapshot document: task.getResult()) {
+                            Reply reply = document.toObject(Reply.class);
+                            replies.get(source).replyList.add(reply);
+                        }
+                        Collections.sort(replies.get(source).replyList, (a, b) -> {
+                            return b.timestamp.compareTo(a.timestamp);
+                        });
+                        replyOuterAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -532,5 +578,4 @@ public class DisplayPostActivity extends AppCompatActivity {
             fetchData();
         }
     }
-
 }

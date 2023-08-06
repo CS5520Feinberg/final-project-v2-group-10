@@ -24,7 +24,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.MainActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
@@ -34,18 +36,26 @@ public class ReplyOuterAdapter extends RecyclerView.Adapter<ReplyHolder> {
     List<Reply> list;
     Context context;
     ReplyViewModel replyViewModel;
+    int mark;
 
-    public ReplyOuterAdapter(Context context, List<Reply> list, ReplyViewModel replyViewModel) {
+    public ReplyOuterAdapter(Context context, List<Reply> list, ReplyViewModel replyViewModel, int mark) {
         this.context = context;
         this.list = list;
         this.replyViewModel = replyViewModel;
+        this.mark = mark;
     }
 
 
     @NonNull
     @Override
     public ReplyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view =  LayoutInflater.from(parent.getContext()).inflate(R.layout.card_reply_layout, parent, false);
+        View view;
+        if (this.mark == -1) {
+            view =  LayoutInflater.from(parent.getContext()).inflate(R.layout.card_reply_layout, parent, false);
+        } else  {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_reply_sub_layout, parent, false);
+        }
+
         return new ReplyHolder(view);
     }
 
@@ -104,7 +114,9 @@ public class ReplyOuterAdapter extends RecyclerView.Adapter<ReplyHolder> {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.getValue() != null) {
-                        content[0] = "Reply to " + snapshot.getValue().toString() + ":";
+                        content[0] = "Reply to " + snapshot.getValue().toString() + ": ";
+                        String contentStr = content[0] + reply.text;
+                        holder.content.setText(contentStr);
                     }
                 }
 
@@ -113,9 +125,9 @@ public class ReplyOuterAdapter extends RecyclerView.Adapter<ReplyHolder> {
 
                 }
             });
+        } else {
+            holder.content.setText(reply.text);
         }
-        String contentStr = content[0] + reply.text;
-        holder.content.setText(contentStr);
         // handle click avatar
         holder.avatar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,13 +150,14 @@ public class ReplyOuterAdapter extends RecyclerView.Adapter<ReplyHolder> {
                     replyViewModel.setReplyRootId(reply.replyId);
                     replyViewModel.setReplyToName(userName[0]);
                 }
+                replyViewModel.setIndex(holder.getAdapterPosition());
                 replyViewModel.setTrigger(!replyViewModel.getTrigger().getValue());
             }
         });
         // sub replies
         // replyList is assembled in fetchReplies()
-        if (reply.replyList != null && reply.replyList.size() > 0) {
-            ReplyOuterAdapter sub = new ReplyOuterAdapter(context, reply.replyList, replyViewModel);
+        if (reply.replyList != null) {
+            ReplyOuterAdapter sub = new ReplyOuterAdapter(context, reply.replyList, replyViewModel, position);
             holder.recyclerView.setLayoutManager(new WrapContentLinearLayoutManager(context,LinearLayoutManager.VERTICAL,false));
             holder.recyclerView.setAdapter(sub);
         } else {

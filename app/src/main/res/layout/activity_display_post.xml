@@ -75,7 +75,6 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="#8A000000"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/user_name_text"
                 app:layout_constraintTop_toTopOf="@+id/avatar_image" />
 
 

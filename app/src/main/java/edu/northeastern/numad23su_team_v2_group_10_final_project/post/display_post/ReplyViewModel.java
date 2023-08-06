@@ -9,6 +9,7 @@ public class ReplyViewModel extends ViewModel {
     private final  MutableLiveData<String> replyToUserId = new MutableLiveData<String>();
     private final MutableLiveData<Boolean> trigger = new MutableLiveData<>();
     private final MutableLiveData<String> replyToName = new MutableLiveData<>();
+    private final MutableLiveData<Integer> index = new MutableLiveData<>();
 
     public void setReplyRootId(String item) {
         replyRootId.setValue(item);
@@ -40,5 +41,13 @@ public class ReplyViewModel extends ViewModel {
 
     public LiveData<String> getReplyToName() {
         return replyToName;
+    }
+
+    public void setIndex(int val) {
+        index.setValue(val);
+    }
+
+    public LiveData<Integer> getIndex() {
+        return index;
     }
 }

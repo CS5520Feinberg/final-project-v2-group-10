@@ -45,6 +45,22 @@ public class SearchUtils {
         return ret;
     }
 
+    // generate key in date order
+    public static String generateKey2() {
+        Random random = new Random();
+        Date date = new Date();
+        long cur = date.getTime();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        String part1 = Long.toString(cur, 32);
+        if (part1.length() < 13) {
+            part1 = String.format("%13s", part1).replace(' ', '0');
+        }
+        return part1 + sb.toString();
+    }
+
     // generate key in reverse date order
     public static String generateKey() {
         Random random = new Random();
@@ -63,8 +79,12 @@ public class SearchUtils {
         for (int i = 0; i < 10; i++) {
             sb.append(chars.charAt(random.nextInt(chars.length())));
         }
-        String part = String.format("%016x", m1 - cur);
-        return part + sb.toString();
+        Long gap = m1 - cur;
+        String part1 = Long.toString(gap, 32);
+        if (part1.length() < 13) {
+            part1 = String.format("%13s", part1).replace(' ', '0');
+        }
+        return part1 + sb.toString();
     }
 }
 

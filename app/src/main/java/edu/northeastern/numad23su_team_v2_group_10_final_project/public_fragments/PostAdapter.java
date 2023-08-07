@@ -65,6 +65,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostHolder>{
         if (post.timestamp != null) holder.date.setText(new SimpleDateFormat("yyyy-MM-dd").format(post.timestamp.toDate()));
         holder.text.setText(post.text);
         if (post.price > 0.0) holder.price.setText("$" + String.format("%.2f", post.price));
+        else holder.price.setText("");
         // get user name and avatar
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users").child(post.userId).child("name");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {

@@ -228,8 +228,10 @@ public class DisplayPostActivity extends AppCompatActivity {
                         .allowSwipeToDismiss(true)
                         .withImageChangeListener((pos) -> {
                             //some codes
+                            pager2.setCurrentItem(pos);
                         })
                         .withBackgroundColorResource(R.color.black)
+                        .withStartPosition(position)
                         .show();
             }
         };

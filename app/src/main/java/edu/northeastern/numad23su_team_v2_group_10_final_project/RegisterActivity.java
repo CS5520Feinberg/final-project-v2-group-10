@@ -118,7 +118,7 @@ public class RegisterActivity extends AppCompatActivity {
                 Toast.makeText(RegisterActivity.this, "Please choose your campus", Toast.LENGTH_SHORT).show();
                 return;
             }
-
+            // current user?...
             String userId = mAuth.getCurrentUser().getUid();
             User newUser = new User(userId, username, email, selectCampus);
             registerUser(email, password, newUser, username);

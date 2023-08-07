@@ -61,7 +61,7 @@ public class FirebaseUtil {
     }
 
     public static String timestampToStringTime(Timestamp timestamp){
-        return new SimpleDateFormat("HH:mm:ss").format(timestamp.toDate());
+        return new SimpleDateFormat("HH:mm").format(timestamp.toDate());
     }
 
     public static String timestampToStringDate(Timestamp timestamp){

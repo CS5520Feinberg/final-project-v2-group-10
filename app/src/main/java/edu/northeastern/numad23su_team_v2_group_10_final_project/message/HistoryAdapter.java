@@ -37,7 +37,12 @@ public class HistoryAdapter extends FirestoreRecyclerAdapter<ChatRoom, HistoryAd
                         boolean lastMessageSentByMe = model.getLastMessageSenderId().equals(FirebaseUtil.currentUserId());
 
                         User otherUser = task.getResult().toObject(User.class);
-                        holder.username.setText(otherUser.getName());
+
+                        if (otherUser.getUserId().equals(FirebaseUtil.currentUserId())){
+                            holder.username.setText(otherUser.getName() + " (Me)");
+                        } else {
+                            holder.username.setText(otherUser.getName());
+                        }
 
                         if (lastMessageSentByMe) {
                             holder.lastReceived.setText("You: " + model.getLastMessage());

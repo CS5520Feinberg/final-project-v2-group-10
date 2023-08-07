@@ -2,32 +2,26 @@ package edu.northeastern.numad23su_team_v2_group_10_final_project;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatImageButton;
-import androidx.fragment.app.Fragment;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+
 import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;
 
-import java.sql.Array;
+
 import java.util.Arrays;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.message.ChatAdapter;
-import edu.northeastern.numad23su_team_v2_group_10_final_project.message.UsersAdapter;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.ChatMessage;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.ChatRoom;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
@@ -58,7 +52,12 @@ public class ChatActivity extends AppCompatActivity {
         chatroomId = FirebaseUtil.getChatroomId(FirebaseUtil.currentUserId(), otherUser.getUserId());
 
         otherUsername = findViewById(R.id.display_username);
-        otherUsername.setText(otherUser.getName());
+        if (otherUser.getUserId().equals(FirebaseUtil.currentUserId())){
+            otherUsername.setText(otherUser.getName() + " (Me)");
+        } else {
+            otherUsername.setText(otherUser.getName());
+        }
+
         backBtn = findViewById(R.id.backButton);
         messageInput = findViewById(R.id.chat_message_input);
         sendMessageBtn = findViewById(R.id.sendButton);

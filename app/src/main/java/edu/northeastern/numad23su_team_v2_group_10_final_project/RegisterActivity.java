@@ -149,7 +149,7 @@ public class RegisterActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         updateUserProfile(username);
                         newUser.userId = user.getUid();
-                        sendEmailVerification();
+                        sendEmailVerification(user);
                         String userid = user.getUid();
                         mDatabase.child("users").child(userid).setValue(newUser);
                         FirebaseUtil.currentUserDetails().set(newUser);

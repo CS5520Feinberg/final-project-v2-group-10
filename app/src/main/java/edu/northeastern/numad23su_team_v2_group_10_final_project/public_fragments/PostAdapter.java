@@ -1,6 +1,8 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.public_fragments;
 
 
+import static edu.northeastern.numad23su_team_v2_group_10_final_project.post.Utils.getPostTypes;
+
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
@@ -37,7 +39,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostHolder>{
     List<Post> list;
     Context context;
     PostClickListener listener;
-    String[] postTypes = {"offerProductPosts", "needProductPosts","offerServicePosts", "needServicePosts"};
+    String[] postTypes = getPostTypes();
 
 
     public void setListener(PostClickListener listener) {
@@ -60,9 +62,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostHolder>{
     public void onBindViewHolder(@NonNull PostHolder holder, int position) {
         Post post = list.get(position);
         holder.title.setText(post.title);
-        holder.date.setText(new SimpleDateFormat("yyyy-MM-dd").format(post.timestamp.toDate()));
+        if (post.timestamp != null) holder.date.setText(new SimpleDateFormat("yyyy-MM-dd").format(post.timestamp.toDate()));
         holder.text.setText(post.text);
         if (post.price > 0.0) holder.price.setText("$" + String.format("%.2f", post.price));
+        else holder.price.setText("");
         // get user name and avatar
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users").child(post.userId).child("name");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {

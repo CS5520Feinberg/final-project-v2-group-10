@@ -36,6 +36,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.util.regex.Pattern;
 
+import edu.northeastern.numad23su_team_v2_group_10_final_project.util.FirebaseUtil;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -117,10 +118,8 @@ public class RegisterActivity extends AppCompatActivity {
                 Toast.makeText(RegisterActivity.this, "Please choose your campus", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            User newUser = new User(username, email, selectCampus);
+            User newUser = new User("", username, email, selectCampus);
             registerUser(email, password, newUser, username);
-            LoginActivity();
         });
     }
 
@@ -149,19 +148,16 @@ public class RegisterActivity extends AppCompatActivity {
                     FirebaseUser user = mAuth.getCurrentUser();
                     if (task.isSuccessful()) {
                         updateUserProfile(username);
-                        sendEmailVerification(user);
+                        newUser.userId = user.getUid();
+                        sendEmailVerification();
+                        String userid = user.getUid();
+                        mDatabase.child("users").child(userid).setValue(newUser);
+                        FirebaseUtil.currentUserDetails().set(newUser);
+                        uploadUserImage(userid);
+                        LoginActivity();
                     } else {
-                        if (user != null && !user.isEmailVerified()) {
-                            updateUserProfile(username);
-                            sendEmailVerification(user);
-                        } else {
-                            Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
+                        Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
-
-                    String userid = user.getUid();
-                    mDatabase.child("users").child(userid).setValue(newUser);
-                    uploadUserImage(userid);
                 });
     }
 

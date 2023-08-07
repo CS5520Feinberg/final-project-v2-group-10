@@ -1,0 +1,15 @@
+{
+  "name": "seed",
+  "version": "1.0.0",
+  "description": "seed firebase data",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "firebase-admin": "^11.10.1"
+  }
+}

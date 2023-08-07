@@ -16,7 +16,6 @@ public class UploadImage implements Parcelable {
     public Boolean isSelected;
     public Boolean isInEditMode;
     public Integer width;
-    public Bitmap bitmap;
 
     public UploadImage(String imageUri, String path, int width) {
         this.imageUri = imageUri;

@@ -48,6 +48,9 @@ import edu.northeastern.numad23su_team_v2_group_10_final_project.LogInActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.UserViewModel;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.search.DisplayUserPostListActivity;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.search.ItemViewModel;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,6 +65,8 @@ public class ProfileFragment extends Fragment {
 
     private TextView userName;
     private TextView userEmail;
+    private String userId;
+    private Button userPosts;
 
     private FirebaseAuth mAuth;
     private ImageView userImage;
@@ -120,11 +125,11 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 //        userIdView = view.findViewById(R.id.user_id);
-//        userViewModel = new ViewModelProvider(getActivity()).get(UserViewModel.class);
-//        userViewModel.getUser().observe(getViewLifecycleOwner(), userId -> {
-//            // update UI here
-//            userIdView.setText(userId);
-//        });
+        userViewModel = new ViewModelProvider(getActivity()).get(UserViewModel.class);
+        userViewModel.getUser().observe(getViewLifecycleOwner(), userId -> {
+            // update UI here
+            this.userId = userId;
+        });
         logout = getActivity();
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
@@ -160,6 +165,17 @@ public class ProfileFragment extends Fragment {
         }
 
 
+
+        userPosts = view.findViewById(R.id.userPosts);
+
+        userPosts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getActivity(), DisplayUserPostListActivity.class);
+                i.putExtra("USER", userId);
+                startActivity(i);
+            }
+        });
 
         userImage = view.findViewById(R.id.userImage);
         FirebaseStorage storage = FirebaseStorage.getInstance();

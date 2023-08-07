@@ -46,7 +46,6 @@ public class ImageAdapterPager extends RecyclerView.Adapter<ImageHolderPager> {
         UploadImage item = list.get(position);
         String imageUri = item.imageUri;
         String path = item.imagePath;
-        Bitmap bitmap = item.bitmap;
         int width = item.width;
         if (item.isInEditMode) {
             holder.checkBox.setVisibility(View.VISIBLE);
@@ -55,9 +54,9 @@ public class ImageAdapterPager extends RecyclerView.Adapter<ImageHolderPager> {
             holder.checkBox.setVisibility(View.GONE);
         }
         holder.imageView.getLayoutParams().height = width;
-        if (bitmap == null) bitmap = BitmapFactory.decodeFile(path);
+        Bitmap bitmap = BitmapFactory.decodeFile(path);
         Bitmap cropImage = Utils.centerSquareScaleBitmap(bitmap, width);
-        if (path.length() > 0 || item.bitmap != null) {
+        if (path.length() > 0) {
             holder.imageView.setImageBitmap(cropImage);
         } else {
             holder.imageView.setImageURI(Uri.parse(imageUri));

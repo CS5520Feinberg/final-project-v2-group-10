@@ -62,6 +62,7 @@ import edu.northeastern.numad23su_team_v2_group_10_final_project.FinalProjectApp
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.Post;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.post.SearchUtils;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.post.display_post.DisplayPostActivity;
 
 public class AddPostActivity extends AppCompatActivity implements ExitDialogFragment.NoticeDialogListener {
     private FirebaseAuth mAuth;
@@ -70,6 +71,10 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
     private StorageReference mStorageRef;
 
     AtomicInteger cnt = new AtomicInteger(0);
+
+    private boolean isEdit = false;
+    private boolean hasSubmitted = false;
+    private String postId;
 
     ExitDialogFragment exitDialogFragment = new ExitDialogFragment();
     Button btnAddImage;
@@ -153,6 +158,12 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
             if (savedInstanceState.containsKey(SEL_TYPE)) {
                    selPostType = savedInstanceState.getInt(SEL_TYPE);
             }
+            if (savedInstanceState.containsKey("isEdit")) {
+                isEdit = savedInstanceState.getBoolean("isEdit");
+            }
+            if (savedInstanceState.containsKey("hasSubmitted")) {
+                hasSubmitted = savedInstanceState.getBoolean("hasSubmitted");
+            }
             final String stringRef = savedInstanceState.getString("reference");
             if (stringRef != null) {
                 List<UploadTask> tasks = mStorageRef.getActiveUploadTasks();
@@ -169,6 +180,7 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
                                 int res = cnt.getAndIncrement();
                                 if (res == list.size() * 2 - 1) {
                                     progressBar.setVisibility(View.GONE);
+                                    retProcess();
                                     finish();
                                 }
                             }
@@ -232,6 +244,25 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
                 adapter.notifyItemRangeChanged(0, list.size());
             }
         });
+
+        Bundle extras = getIntent().getExtras();
+        if (savedInstanceState == null && extras != null && extras.containsKey("postId")) {
+            isEdit = true;
+            Long type = extras.getLong("type");
+            int index = type.intValue();
+            btnList.get(index).setChecked(true);
+            clickSelTypeButton(index);
+            postId = extras.getString("postId");
+            String titleStr = extras.getString("title");
+            title.setText(titleStr);
+            String textStr = extras.getString("text");
+            content.setText(textStr);
+            Double priceVal = extras.getDouble("price");
+            price.setText(priceVal.toString());
+            ArrayList<UploadImage> arr = extras.getParcelableArrayList("images");
+            list.addAll(arr);
+            adapter.notifyDataSetChanged();
+        }
     }
 
     private void clickSelTypeButton(int index) {
@@ -278,11 +309,14 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
         cnt.set(0);
         progressBar.setVisibility(View.VISIBLE);
         String key = generateKey();
+        if (isEdit) key = postId;
+        hasSubmitted = true;
         Post p = new Post(Long.valueOf(selPostType), userId, titleStr, contentStr, priceVal, key, Long.valueOf(list.size()));
         Map<String, Object> postMap = p.toMap();
         HashMap<String, Object> updates = new HashMap<>();
         updates.put("/posts/" + postTypes[selPostType] + "/" + key, postMap);
         updates.put("/users/" + userId + "/" + postTypes[selPostType] + "/" + key, ServerValue.TIMESTAMP);
+        String finalKey = key;
         mDbRef.updateChildren(updates).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
@@ -298,7 +332,10 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
                 Map<String, Object> data = triGram(titleStr + " " + contentStr);
                 data.putAll(postMap);
                 data.put("timestamp", FieldValue.serverTimestamp());
-                mFireStoreRef.collection("posts").document(postTypes[selPostType]).collection("posts").document(key).set(data).addOnFailureListener(new OnFailureListener() {
+                if (isEdit) {
+                    mFireStoreRef.collection("posts").document(postTypes[selPostType]).collection("posts").document(finalKey).delete();
+                }
+                mFireStoreRef.collection("posts").document(postTypes[selPostType]).collection("posts").document(finalKey).set(data).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(AddPostActivity.this, "upload to FireStore failed.", Toast.LENGTH_LONG).show();
@@ -324,6 +361,7 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
 
                 if (list.size() == 0) {
                     progressBar.setVisibility(View.GONE);
+                    retProcess();
                     finish();
                 }
 
@@ -342,7 +380,7 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
                     scaledImg.compress(Bitmap.CompressFormat.JPEG, 80, baosSmall);
                     byte[] data1 = baosOrig.toByteArray();
                     byte[] data2 = baosSmall.toByteArray();
-                    StorageReference mountainImagesRef1 = mStorageRef.child("images/" + postTypes[selPostType] + "/" + key + "/original/" + name);
+                    StorageReference mountainImagesRef1 = mStorageRef.child("images/" + postTypes[selPostType] + "/" + finalKey + "/original/" + name);
                     UploadTask uploadTask1 = mountainImagesRef1.putBytes(data1);
                     int finalI = i;
                     uploadTask1.addOnFailureListener(new OnFailureListener() {
@@ -359,11 +397,12 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
                             int res = cnt.getAndIncrement();
                             if (res == list.size() * 2 - 1) {
                                 progressBar.setVisibility(View.GONE);
+                                retProcess();
                                 finish();
                             }
                         }
                     });
-                    StorageReference mountainImagesRef2 = mStorageRef.child("images/" + postTypes[selPostType] + "/" + key + "/small/" + name);
+                    StorageReference mountainImagesRef2 = mStorageRef.child("images/" + postTypes[selPostType] + "/" + finalKey + "/small/" + name);
                     UploadTask uploadTask2 = mountainImagesRef2.putBytes(data2);
                     uploadTask2.addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -392,6 +431,8 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
         outState.putParcelableArrayList(PHOTOS, list);
         outState.putInt(SEL_TYPE, selPostType);
         outState.putInt("cnt", cnt.intValue());
+        outState.putBoolean("isEdit", isEdit);
+        outState.putBoolean("hasSubmitted", hasSubmitted);
         if (mStorageRef != null) {
             outState.putString("reference", mStorageRef.toString());
         }
@@ -401,6 +442,11 @@ public class AddPostActivity extends AppCompatActivity implements ExitDialogFrag
     @Override
     public void onBackPressed() {
         exitDialogFragment.show(getSupportFragmentManager(), "exit");
+    }
+
+    private void retProcess() {
+        Intent i = new Intent(AddPostActivity.this, DisplayPostActivity.class);
+        setResult(RESULT_OK, i);
     }
 
     @Override

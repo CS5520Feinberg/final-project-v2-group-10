@@ -28,6 +28,13 @@
         android:theme="@style/Theme.Numad23su_team_v2_group_10_final_project"
         tools:targetApi="31">
         <activity
+            android:name=".search.DisplayUserPostListActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".post.display_post.DisplayPostActivity"
             android:exported="false">
             <meta-data

@@ -57,6 +57,7 @@ public class TempPostFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private String className;
 
     String[] postTypes = getPostTypes();
     private UserViewModel userViewModel;
@@ -137,6 +138,7 @@ public class TempPostFragment extends Fragment {
         mDbRef =  FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         mFireStoreRef = FirebaseFirestore.getInstance();
+        className = getActivity().getClass().getSimpleName();
 
         list = new ArrayList<>();
         adapter = new PostAdapter(getContext(),list);
@@ -152,8 +154,7 @@ public class TempPostFragment extends Fragment {
             @Override
             public void onAvatarClick(int position) {
                 String userId = list.get(position).userId;
-                String className = getActivity().getClass().getSimpleName();
-                if (className.equals("SearchActivity")) {
+                if (className.equals("SearchActivity") || className.equals("DisplayUserPostListActivity")) {
                     //Start main activity
                     Intent i = new Intent(getActivity(), MainActivity.class);
                     i.putExtra("USER", userId);
@@ -222,21 +223,30 @@ public class TempPostFragment extends Fragment {
         Query q;
         CollectionReference ref = mFireStoreRef.collection("posts").document(postTypes[postType]).collection("posts") ;
         if (clear) {
-            if (query.length() == 0) {
+            if (query.length() == 0) { // from main
                 q = ref.whereEqualTo("isActive", true).orderBy("timestamp", Query.Direction.DESCENDING).limit(limit);
             } else {
-                q = ref.where(Filter.and(SearchUtils.generateFilterArr(query)))
-                        .limit(limit);
+                limit = Integer.MAX_VALUE; // cancel limit for search and user post list
+                if (className.equals("SearchActivity")) {
+                    q = ref.where(Filter.and(SearchUtils.generateFilterArr(query)));
+                } else {
+                    q = ref.whereEqualTo("userId", query);
+                }
+
             }
         } else {
-            if (query.length() == 0) {
+            if (query.length() == 0) { // from main
                 q = ref.whereEqualTo("isActive", true).orderBy("timestamp", Query.Direction.DESCENDING);
                 if (lastVisible != null) q = q.startAfter(lastVisible).limit(limit);
                 else q = q.limit(limit);
             } else {
-                q = ref.where(Filter.and(SearchUtils.generateFilterArr(query)));
-                if (lastVisible != null) q = q.startAfter(lastVisible).limit(limit);
-                else q = q.limit(limit);
+                limit = Integer.MAX_VALUE; // cancel limit for search and user post list
+                if (className.equals("SearchActivity")) {
+                    q = ref.where(Filter.and(SearchUtils.generateFilterArr(query)));
+                } else {
+                    q = ref.whereEqualTo("userId", query);
+                }
+                if (lastVisible != null) q = q.startAfter(lastVisible);
             }
         }
 

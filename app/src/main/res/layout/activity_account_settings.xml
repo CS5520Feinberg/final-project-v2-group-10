@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="24dp"
-    tools:context=".AccountSettingsActivity">
+    tools:context=".profile.AccountSettingsActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,7 +45,7 @@
                     app:backgroundTint="@color/white"
                     android:tint="@color/white"
                     android:clickable="true"
-                    android:src="@drawable/baseline_camera_alt_24"
+                    android:src="@drawable/ic_baseline_edit_24"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/imageView" />
 

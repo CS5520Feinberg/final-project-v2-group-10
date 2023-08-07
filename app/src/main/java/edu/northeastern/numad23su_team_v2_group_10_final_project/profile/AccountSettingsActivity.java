@@ -1,4 +1,4 @@
-package edu.northeastern.numad23su_team_v2_group_10_final_project;
+package edu.northeastern.numad23su_team_v2_group_10_final_project.profile;
 
 import static android.content.ContentValues.TAG;
 
@@ -27,8 +27,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -43,6 +41,8 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 
+import edu.northeastern.numad23su_team_v2_group_10_final_project.LogInActivity;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
 
 public class AccountSettingsActivity extends AppCompatActivity {

@@ -60,6 +60,8 @@ public class AccountSettingsActivity extends AppCompatActivity {
     FloatingActionButton floatingActionButton;
     FirebaseAuth mAuth;
 
+    private String originalEmail;
+
     private DatabaseReference mDatabase;
 
 
@@ -107,6 +109,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser != null) {
+            originalEmail = firebaseUser.getEmail();
             String userId = firebaseUser.getUid();
 
             DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -175,10 +178,6 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 updateEmail.setError("Valid NEU Email is Required");
                 return;
             }
-            if (TextUtils.isEmpty(password) || TextUtils.isEmpty(confirmPwd)) {
-                updatePwd.setError("Password is Required");
-                return;
-            }
             if (!password.equals(confirmPwd)) {
                 updateConfirmPwd.setError("Password Do not Match");
                 return;
@@ -213,44 +212,31 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
             uploadUserImage(user.getUid());
 
-            // Update email and password with Firebase Authentication
-            user.updateEmail(email)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Log.d(TAG, "User email address updated.");
-                                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                                user.sendEmailVerification();
+            if (!originalEmail.equals(email)) {
 
-                                user.updatePassword(password)
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    Log.d(TAG, "User password updated.");
+                // Update email and password with Firebase Authentication
+                user.updateEmail(email)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "User email address updated.");
+                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                    user.sendEmailVerification();
+                                    if (!password.isEmpty()) {
+                                        updatePassword(user, password);
+                                    }
 
-
-                                                    // Sign out the user
-                                                    FirebaseAuth.getInstance().signOut();
-
-
-                                                    // Navigate user to the login screen
-                                                    Intent intent = new Intent(AccountSettingsActivity.this, LogInActivity.class);
-                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                    startActivity(intent);
-                                                    finish();
-                                                } else {
-                                                    Log.w(TAG, "Update failed", task.getException());
-                                                }
-                                            }
-                                        });
-                            } else {
-                                Log.w(TAG, "Update failed", task.getException());
+                                } else {
+                                    Log.w(TAG, "Update failed", task.getException());
+                                }
                             }
-                        }
-                    });
-
+                        });
+            } else {
+                if (!password.isEmpty()) {
+                    updatePassword(user, password);
+                }
+            }
 
 
         });
@@ -258,6 +244,33 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
     }
 
+
+    private void updatePassword(FirebaseUser user, String password) {
+
+        user.updatePassword(password)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "User password updated.");
+
+
+                            // Sign out the user
+                            FirebaseAuth.getInstance().signOut();
+
+
+                            // Navigate user to the login screen
+                            Intent intent = new Intent(AccountSettingsActivity.this, LogInActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            Log.w(TAG, "Update failed", task.getException());
+                        }
+                    }
+                });
+
+    }
     private void uploadUserImage(String userid) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();

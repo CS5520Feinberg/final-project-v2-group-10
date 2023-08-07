@@ -69,7 +69,6 @@ public class LogInActivity extends AppCompatActivity {
                                 finish();
                             } else {
                                 Toast.makeText(LogInActivity.this, "Please verify your email address", Toast.LENGTH_SHORT).show();
-
                             }
                         } else {
                             Toast.makeText(LogInActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -84,5 +83,4 @@ public class LogInActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
 }

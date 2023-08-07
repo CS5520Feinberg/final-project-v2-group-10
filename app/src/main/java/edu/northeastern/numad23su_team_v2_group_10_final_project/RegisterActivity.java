@@ -118,11 +118,8 @@ public class RegisterActivity extends AppCompatActivity {
                 Toast.makeText(RegisterActivity.this, "Please choose your campus", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            String userId = mAuth.getCurrentUser().getUid();
-            User newUser = new User(userId, username, email, selectCampus);
+            User newUser = new User("", username, email, selectCampus);
             registerUser(email, password, newUser, username);
-            LoginActivity();
         });
     }
 
@@ -151,20 +148,16 @@ public class RegisterActivity extends AppCompatActivity {
                     FirebaseUser user = mAuth.getCurrentUser();
                     if (task.isSuccessful()) {
                         updateUserProfile(username);
+                        newUser.userId = user.getUid();
                         sendEmailVerification();
+                        String userid = user.getUid();
+                        mDatabase.child("users").child(userid).setValue(newUser);
+                        FirebaseUtil.currentUserDetails().set(newUser);
+                        uploadUserImage(userid);
+                        LoginActivity();
                     } else {
-                        if (user != null && !user.isEmailVerified()) {
-                            updateUserProfile(username);
-                            sendEmailVerification();
-                        } else {
-                            Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
+                        Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
-
-                    String userid = user.getUid();
-                    mDatabase.child("users").child(userid).setValue(newUser);
-                    FirebaseUtil.currentUserDetails().set(newUser);
-                    uploadUserImage(userid);
                 });
     }
 

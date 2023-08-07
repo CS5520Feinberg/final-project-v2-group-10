@@ -47,7 +47,7 @@ public class UsersFragment extends Fragment {
 
         searchButton.setOnClickListener(v -> {
             String searchTerm = searchInput.getText().toString();
-            if (searchTerm.isEmpty() || searchTerm.length()<3) {
+            if (searchTerm.isEmpty()) {
                 searchInput.setError("Invalid Username");
                 return;
             }

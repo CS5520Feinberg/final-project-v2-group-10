@@ -161,8 +161,7 @@ public class RegisterActivity extends AppCompatActivity {
                 });
     }
 
-    private void sendEmailVerification() {
-        final FirebaseUser user = mAuth.getCurrentUser();
+    private void sendEmailVerification(FirebaseUser user) {
         user.sendEmailVerification()
                 .addOnCompleteListener(task -> Toast.makeText(RegisterActivity.this, "Please check your email for verifying", Toast.LENGTH_SHORT).show());
     }

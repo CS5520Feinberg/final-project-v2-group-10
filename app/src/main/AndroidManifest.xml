@@ -97,11 +97,19 @@
                 android:value="" />
         </activity>
         <activity
+            android:name=".profile.AccountSettingsActivity"
+            android:exported="true">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".ChatActivity"
             android:exported="false"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:windowSoftInputMode="adjustResize">
         </activity>
+
 
         <provider
             android:name="androidx.core.content.FileProvider"

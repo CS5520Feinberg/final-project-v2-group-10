@@ -299,6 +299,6 @@ public class TempPostFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        fetchData(true);
+        fetchData(true, showCurrentUserPostsOnly);
     }
 }

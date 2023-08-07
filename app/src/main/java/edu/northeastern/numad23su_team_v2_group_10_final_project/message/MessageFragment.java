@@ -3,18 +3,21 @@ package edu.northeastern.numad23su_team_v2_group_10_final_project.message;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MessageFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+
+import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.public_fragments.FSAdapter;
+
+
 public class MessageFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
@@ -30,15 +33,6 @@ public class MessageFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MessageFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static MessageFragment newInstance(String param1, String param2) {
         MessageFragment fragment = new MessageFragment();
         Bundle args = new Bundle();
@@ -61,6 +55,39 @@ public class MessageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_message, container, false);
+        View view = inflater.inflate(R.layout.fragment_message, container, false);
+        TabLayout tabLayout = view.findViewById(R.id.tab_layout);
+        ViewPager2 viewpager = view.findViewById(R.id.view_pager);
+
+        FSAdapter vpAdapter = new FSAdapter(this);
+
+        vpAdapter.addFragment(new ChatFragment());
+        vpAdapter.addFragment(new UsersFragment());
+        viewpager.setAdapter(vpAdapter);
+
+        ArrayList<String> fragmentTitle = new ArrayList<>();
+        fragmentTitle.add("History");
+        fragmentTitle.add("Search Users");
+
+        new TabLayoutMediator(tabLayout, viewpager,
+                (tab, position) -> tab.setText(fragmentTitle.get(position))
+        ).attach();
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewpager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+        return view;
     }
 }

@@ -63,13 +63,17 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.ChatActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.MainActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.Post;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.Reply;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.post.create_post.AddPostActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.post.create_post.ImageClickListener;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.post.create_post.UploadImage;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.util.AndroidUtil;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.util.FirebaseUtil;
 
 public class DisplayPostActivity extends AppCompatActivity {
     private static int EDIT = 100;
@@ -162,6 +166,30 @@ public class DisplayPostActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // mAuth and postUserId
+                String posterId = post.userId;
+                FirebaseUtil.allUserCollectionReference().document(posterId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot documentSnapshot = task.getResult();
+                            if (documentSnapshot.exists()) {
+                                User otherUser = documentSnapshot.toObject(User.class);
+                                if (otherUser != null) {
+                                    Intent intent = new Intent(DisplayPostActivity.this, ChatActivity.class);
+                                    AndroidUtil.passUserModelAsIntent(intent, otherUser);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                } else {
+                                    Toast.makeText(DisplayPostActivity.this, "Failed to fetch user information. Please try again later.", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(DisplayPostActivity.this, "User with the provided ID does not exist.", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(DisplayPostActivity.this, "Error fetching user information. Please check your internet connection and try again.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
         });
 
@@ -208,7 +236,7 @@ public class DisplayPostActivity extends AppCompatActivity {
         adapter.setListener(listener);
 
         replyOuterAdapter = new ReplyOuterAdapter(this, replies, replyViewModel, -1);
-        recyclerView.setLayoutManager(new WrapContentLinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+        recyclerView.setLayoutManager(new WrapContentLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         //recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(replyOuterAdapter);
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -353,11 +381,11 @@ public class DisplayPostActivity extends AppCompatActivity {
                                     fetchReplySingle(replyId, false, source); // index is set
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(DisplayPostActivity.this, "Reply failed.", Toast.LENGTH_LONG).show();
-                        }
-                    });
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(DisplayPostActivity.this, "Reply failed.", Toast.LENGTH_LONG).show();
+                                }
+                            });
                 }
             }
         });
@@ -404,13 +432,13 @@ public class DisplayPostActivity extends AppCompatActivity {
                     int finalIndex = index;
                     replyOuterAdapter.notifyItemInserted(finalIndex);
                     documentReference.collection("replies").document(reply.replyId).collection("replies")
-                                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                     if (!task.isSuccessful()) {
                                         return;
                                     }
-                                    for (DocumentSnapshot document: task.getResult()) {
+                                    for (DocumentSnapshot document : task.getResult()) {
                                         Reply reply = document.toObject(Reply.class);
                                         reply.replyList = new ArrayList<>();
                                         replies.get(finalIndex).replyList.add(reply);
@@ -480,7 +508,8 @@ public class DisplayPostActivity extends AppCompatActivity {
                                 .into(avatar);
                     }
                 });
-                if (post.timestamp != null) date.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(post.timestamp.toDate()));
+                if (post.timestamp != null)
+                    date.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(post.timestamp.toDate()));
                 title.setText(post.title);
                 if (post.price > 0.0) {
                     String str = "price: $";
@@ -567,7 +596,7 @@ public class DisplayPostActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (task.isSuccessful()) {
                         replies.get(source).replyList.clear();
-                        for (DocumentSnapshot document: task.getResult()) {
+                        for (DocumentSnapshot document : task.getResult()) {
                             Reply reply = document.toObject(Reply.class);
                             reply.replyList = new ArrayList<>();
                             replies.get(source).replyList.add(reply);

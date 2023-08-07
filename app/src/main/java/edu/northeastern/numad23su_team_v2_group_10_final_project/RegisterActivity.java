@@ -36,6 +36,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.util.regex.Pattern;
 
+import edu.northeastern.numad23su_team_v2_group_10_final_project.util.FirebaseUtil;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -118,7 +119,8 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            User newUser = new User(username, email, selectCampus);
+            String userId = mAuth.getCurrentUser().getUid();
+            User newUser = new User(userId, username, email, selectCampus);
             registerUser(email, password, newUser, username);
             LoginActivity();
         });
@@ -161,6 +163,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                     String userid = user.getUid();
                     mDatabase.child("users").child(userid).setValue(newUser);
+                    FirebaseUtil.currentUserDetails().set(newUser);
                     uploadUserImage(userid);
                 });
     }

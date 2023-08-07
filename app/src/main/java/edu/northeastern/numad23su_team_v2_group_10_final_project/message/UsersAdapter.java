@@ -31,7 +31,8 @@ public class UsersAdapter extends FirestoreRecyclerAdapter<User, UsersAdapter.Us
     @Override
     protected void onBindViewHolder(@NonNull UsersViewHolder holder, int position, @NonNull User model) {
         holder.username.setText(model.getName());
-        //holder.campus.setText(model.getCampus());
+        if(model.getCampus() != null) holder.campus.setText(model.getCampus());
+        else holder.campus.setText("Boston");
         if (model.getUserId().equals(FirebaseUtil.currentUserId())){
             holder.username.setText(model.getName() + " (Me)");
         }

@@ -228,8 +228,10 @@ public class DisplayPostActivity extends AppCompatActivity {
                         .allowSwipeToDismiss(true)
                         .withImageChangeListener((pos) -> {
                             //some codes
+                            pager2.setCurrentItem(pos);
                         })
                         .withBackgroundColorResource(R.color.black)
+                        .withStartPosition(position)
                         .show();
             }
         };
@@ -512,6 +514,7 @@ public class DisplayPostActivity extends AppCompatActivity {
                     date.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(post.timestamp.toDate()));
                 title.setText(post.title);
                 if (post.price > 0.0) {
+                    price.setVisibility(View.VISIBLE);
                     String str = "price: $";
                     if (post.type == 1 || post.type == 3) {
                         str = "payment: $";

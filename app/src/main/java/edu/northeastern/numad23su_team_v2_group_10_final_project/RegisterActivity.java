@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -32,6 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.util.regex.Pattern;
@@ -79,6 +81,9 @@ public class RegisterActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         floatingActionButton = findViewById(R.id.floatingActionButton);
 
+        String defaultImageUri = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
+        Picasso.get().load(defaultImageUri).into(imageView);
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         floatingActionButton.setOnClickListener(v -> {
@@ -101,7 +106,7 @@ public class RegisterActivity extends AppCompatActivity {
                 signupUsername.setError("Username is Required");
                 return;
             }
-            if (TextUtils.isEmpty(email)) {
+            if (TextUtils.isEmpty(email) && !validEmail(email)) {
                 signupEmail.setError("Valid NEU Email is Required");
                 return;
             }
@@ -118,6 +123,7 @@ public class RegisterActivity extends AppCompatActivity {
                 Toast.makeText(RegisterActivity.this, "Please choose your campus", Toast.LENGTH_SHORT).show();
                 return;
             }
+
             User newUser = new User("", username, email, selectCampus);
             registerUser(email, password, newUser, username);
         });
@@ -156,7 +162,7 @@ public class RegisterActivity extends AppCompatActivity {
                         uploadUserImage(userid);
                         LoginActivity();
                     } else {
-                        Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegisterActivity.this, "Failed to register user!", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -180,10 +186,9 @@ public class RegisterActivity extends AppCompatActivity {
 
         UploadTask uploadTask = avatarRef.putBytes(data);
         uploadTask.addOnFailureListener(exception -> {
-            Toast.makeText(RegisterActivity.this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(RegisterActivity.this, "Failed to upload Image!", Toast.LENGTH_SHORT).show();
         }).addOnSuccessListener(taskSnapshot -> {
             Toast.makeText(RegisterActivity.this, "Upload Image Successfully!", Toast.LENGTH_SHORT).show();
-
         });
     }
 

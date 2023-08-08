@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -54,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
     ProfileFragment profileFragment;
     String[] tags = {"product", "service", "message", "profile"};
     Boolean showSearch = true;
-    String userId;
     boolean jumpFromPost = false;
 
     @Override
@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
         FinalProjectApplication myApplication = (FinalProjectApplication) getApplicationContext();
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        userId = FirebaseAuth.getInstance().getUid();
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         userViewModel.setUser(FirebaseAuth.getInstance().getUid());
 
@@ -99,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
                     replaceFragment("message");
                 } else if (id == R.id.user) {
                     showSearch = false;
+                    userViewModel.setUser(FirebaseAuth.getInstance().getUid());
                     invalidateOptionsMenu();
                     replaceFragment("profile");
                 }
@@ -109,10 +109,13 @@ public class MainActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null && extras.containsKey("USER")) {
-            userId = extras.getString("USER");
+            // highlighting without clicking
+            String userId = extras.getString("USER");
             userViewModel.setUser(userId);
-            View view = binding.bottomNavigationView.findViewById(R.id.user);
-            view.performClick();
+            MenuItem menuItem = binding.bottomNavigationView.getMenu().findItem(R.id.user);
+            menuItem.setChecked(true);
+            invalidateOptionsMenu();
+            replaceFragment("profile");
         } else {
             if (savedInstanceState == null || !savedInstanceState.containsKey("SEL")) {
                 View view = binding.bottomNavigationView.findViewById(R.id.product);
@@ -127,16 +130,21 @@ public class MainActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         Bundle extras = intent.getExtras();
         if (extras != null && extras.containsKey("USER")) {
-            userId = extras.getString("USER");
+            // highlighting without clicking
+            String userId = extras.getString("USER");
             userViewModel.setUser(userId);
-            View view = binding.bottomNavigationView.findViewById(R.id.user);
-            view.performClick();
+            MenuItem menuItem = binding.bottomNavigationView.getMenu().findItem(R.id.user);
+            menuItem.setChecked(true);
+            invalidateOptionsMenu();
+            replaceFragment("profile");
         }
     }
 
     public void switchToUserTab() {
-        View view = binding.bottomNavigationView.findViewById(R.id.user);
-        view.performClick();
+        MenuItem menuItem = binding.bottomNavigationView.getMenu().findItem(R.id.user);
+        menuItem.setChecked(true);
+        invalidateOptionsMenu();
+        replaceFragment("profile");
         jumpFromPost = true;
     }
 

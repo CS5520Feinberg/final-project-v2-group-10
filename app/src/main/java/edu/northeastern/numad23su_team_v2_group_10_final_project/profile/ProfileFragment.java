@@ -132,8 +132,9 @@ public class ProfileFragment extends Fragment {
         lastSeenLocation = view.findViewById(R.id.lastSeenLocation);
         userViewModel = new ViewModelProvider(getActivity()).get(UserViewModel.class);
         userViewModel.getUser().observe(getViewLifecycleOwner(), userId -> {
-            // update UI here
+            // UI update here for userId
             this.userId = userId;
+            Log.d("Update UI for user: ", userId);
         });
         logout = getActivity();
         mAuth = FirebaseAuth.getInstance();

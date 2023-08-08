@@ -2,14 +2,21 @@ package edu.northeastern.numad23su_team_v2_group_10_final_project;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
+import android.Manifest;
+
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,18 +24,27 @@ import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.databinding.ActivityMainBinding;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.message.MessageFragment;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.product.ProductFragment;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.profile.ProfileFragment;
-import edu.northeastern.numad23su_team_v2_group_10_final_project.search.ItemViewModel;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.search.SearchActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.service.ServiceFragment;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1252;
     private UserViewModel userViewModel;
     ActivityMainBinding binding;
     MenuItem searchItem;
@@ -50,6 +66,20 @@ public class MainActivity extends AppCompatActivity {
         userId = FirebaseAuth.getInstance().getUid();
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         userViewModel.setUser(FirebaseAuth.getInstance().getUid());
+
+
+        System.out.println(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION));
+        // Check for location permission
+        System.out.println(PackageManager.PERMISSION_GRANTED);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Request location permission
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        } else {
+            fetchLastKnownLocation();
+        }
+
+
+
         binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -198,4 +228,50 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fetchLastKnownLocation();
+            }
+        }
+    }
+
+
+    private void fetchLastKnownLocation() {
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, location -> {
+                        if (location != null) {
+                            // Use Geocoder to get the nearest city
+                            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+                            List<Address> addresses = null;
+                            try {
+                                addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                                if (addresses != null && !addresses.isEmpty()) {
+                                    String city = addresses.get(0).getLocality();  // Get the city name
+                                    saveCityToDatabase(city);  // Save the city to the database
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+        }
+    }
+
+
+    private void saveCityToDatabase(String city) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userRef = database.getReference("users").child(userId);
+        userRef.child("lastSeenCity").setValue(city);
+    }
+
 }

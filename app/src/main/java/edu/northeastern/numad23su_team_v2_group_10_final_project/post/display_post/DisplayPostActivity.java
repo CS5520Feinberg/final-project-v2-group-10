@@ -58,8 +58,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -354,6 +356,21 @@ public class DisplayPostActivity extends AppCompatActivity {
                             tv_reply_to.setVisibility(View.GONE);
                             comment.setText("");
                             fetchReplySingle(replyId, true, -1);
+
+                            // notification
+                            String curUserName = Objects.requireNonNull(mAuth.getCurrentUser()).getDisplayName();
+                            if (curUserName == null) curUserName = "";
+                            Map<String,Object> notification = new HashMap<>();
+                            notification.put("type", 1);
+                            notification.put("postType", post.type.toString());
+                            notification.put("postId", post.postId);
+                            notification.put("postTitle", post.title);
+                            notification.put("text", text);
+                            notification.put("userName", curUserName);
+
+                            String receiverId = post.userId;
+                            mFireStoreRef.collection("users").document(receiverId).collection("notifications")
+                                    .add(notification);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -361,6 +378,7 @@ public class DisplayPostActivity extends AppCompatActivity {
                             Toast.makeText(DisplayPostActivity.this, "Reply failed.", Toast.LENGTH_LONG).show();
                         }
                     });
+
                 } else {
                     String replyId = generateKey();
                     String text = comment.getText().toString();
@@ -369,6 +387,8 @@ public class DisplayPostActivity extends AppCompatActivity {
                     reply.replyRootId = replyRootId;
                     reply.replyToUserId = replyViewModel.getReplyToUserId().getValue();
                     int source = replyViewModel.getIndex().getValue();
+
+                    String receiverId = reply.replyToUserId;
 
                     documentReference.collection("replies").document(replyRootId).collection("replies").document(replyId).set(reply.toMap())
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -381,6 +401,21 @@ public class DisplayPostActivity extends AppCompatActivity {
                                     tv_reply_to.setVisibility(View.GONE);
                                     comment.setText("");
                                     fetchReplySingle(replyId, false, source); // index is set
+
+                                    // notification
+                                    String curUserName = Objects.requireNonNull(mAuth.getCurrentUser()).getDisplayName();
+                                    if (curUserName == null) curUserName = "";
+                                    Map<String,Object> notification = new HashMap<>();
+                                    notification.put("type", 1);
+                                    notification.put("postType", post.type.toString());
+                                    notification.put("postId", post.postId);
+                                    notification.put("postTitle", post.title);
+                                    notification.put("text", text);
+                                    notification.put("userName", curUserName);
+
+                                    String receiverId = reply.replyToUserId;
+                                    mFireStoreRef.collection("users").document(receiverId).collection("notifications")
+                                            .add(notification);
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
@@ -417,7 +452,7 @@ public class DisplayPostActivity extends AppCompatActivity {
 
     private void fetchReplies() {
         CollectionReference ref = documentReference.collection("replies");
-        Query q = ref.orderBy("timestamp", Query.Direction.DESCENDING);
+        Query q = ref.orderBy("timestamp", Query.Direction.ASCENDING);
         q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -446,7 +481,7 @@ public class DisplayPostActivity extends AppCompatActivity {
                                         replies.get(finalIndex).replyList.add(reply);
                                     }
                                     Collections.sort(replies.get(finalIndex).replyList, (a, b) -> {
-                                        return b.timestamp.compareTo(a.timestamp);
+                                        return a.timestamp.compareTo(b.timestamp);
                                     });
                                     replyOuterAdapter.notifyItemChanged(finalIndex);
                                 }
@@ -605,7 +640,7 @@ public class DisplayPostActivity extends AppCompatActivity {
                             replies.get(source).replyList.add(reply);
                         }
                         Collections.sort(replies.get(source).replyList, (a, b) -> {
-                            return b.timestamp.compareTo(a.timestamp);
+                            return a.timestamp.compareTo(b.timestamp);
                         });
                         replyOuterAdapter.notifyDataSetChanged();
                     }

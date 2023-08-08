@@ -17,6 +17,7 @@ import android.location.Address;
 import android.location.Geocoder;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,6 +28,8 @@ import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -36,6 +39,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.databinding.ActivityMainBinding;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.message.MessageFragment;
@@ -63,6 +68,19 @@ public class MainActivity extends AppCompatActivity {
         FinalProjectApplication myApplication = (FinalProjectApplication) getApplicationContext();
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("Main", "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+                        // Get new FCM registration token
+                        String token = task.getResult();
+                        FirebaseFirestore.getInstance().collection("users").document(FirebaseAuth.getInstance().getUid()).update("token", token);
+                    }
+                });
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         userViewModel.setUser(FirebaseAuth.getInstance().getUid());
 

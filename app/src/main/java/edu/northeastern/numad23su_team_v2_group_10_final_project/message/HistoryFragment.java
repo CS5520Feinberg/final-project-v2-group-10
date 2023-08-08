@@ -19,12 +19,12 @@ import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.ChatRoom;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.util.FirebaseUtil;
 
-public class ChatFragment extends Fragment {
+public class HistoryFragment extends Fragment {
 
     RecyclerView recyclerView;
     HistoryAdapter historyAdapter;
 
-    public ChatFragment() {
+    public HistoryFragment() {
 
     }
 

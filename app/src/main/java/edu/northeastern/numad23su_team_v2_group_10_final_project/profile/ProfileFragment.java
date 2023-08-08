@@ -65,6 +65,9 @@ public class ProfileFragment extends Fragment {
     private Button accountSettingButton;
 
     private TextView userName;
+
+    private TextView lastSeenLocation;
+
     private TextView userEmail;
     private String userId;
     private Button userPosts;
@@ -126,6 +129,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 //        userIdView = view.findViewById(R.id.user_id);
+        lastSeenLocation = view.findViewById(R.id.lastSeenLocation);
         userViewModel = new ViewModelProvider(getActivity()).get(UserViewModel.class);
         userViewModel.getUser().observe(getViewLifecycleOwner(), userId -> {
             // update UI here
@@ -161,6 +165,8 @@ public class ProfileFragment extends Fragment {
                     Log.w(TAG, "Failed to read value.", error.toException());
                 }
             });
+
+            displayLastSeenLocation(userId);
         } else {
             Log.d(TAG, "No current user.");
         }
@@ -275,6 +281,28 @@ public class ProfileFragment extends Fragment {
             Toast.makeText(getContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
         }).addOnSuccessListener(taskSnapshot -> {
             Toast.makeText(getContext(), "Upload Image Successfully!", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void displayLastSeenLocation(String userId) {
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+        userRef.child("lastSeenCity").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String city = dataSnapshot.getValue(String.class);
+                if (city != null) {
+                    // Update the UI with the city value
+                    lastSeenLocation.setText("Last seen: " + city);
+                } else {
+                    lastSeenLocation.setText("Last seen: Unknown");
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle any potential errors
+            }
         });
     }
 

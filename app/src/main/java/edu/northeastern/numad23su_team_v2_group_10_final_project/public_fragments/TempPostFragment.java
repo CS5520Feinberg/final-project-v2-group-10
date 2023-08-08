@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -36,6 +38,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.MainActivity;
@@ -58,13 +61,14 @@ public class TempPostFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private String className;
+    private boolean sortByPrice = false;
 
     String[] postTypes = getPostTypes();
     private UserViewModel userViewModel;
-
     private ItemViewModel viewModel;
     TextView textView;
     RecyclerView recyclerView;
+    SwitchCompat switchCompat;
     List<Post> list;
     private FirebaseAuth mAuth;
     private FirebaseFirestore mFireStoreRef;
@@ -129,9 +133,9 @@ public class TempPostFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(ItemViewModel.class);
-        textView = view.findViewById(R.id.textView);
         recyclerView = view.findViewById(R.id.recycler_view);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        switchCompat = view.findViewById(R.id.switch1);
         userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
 
         mAuth = FirebaseAuth.getInstance();
@@ -139,6 +143,10 @@ public class TempPostFragment extends Fragment {
         mStorageRef = FirebaseStorage.getInstance().getReference();
         mFireStoreRef = FirebaseFirestore.getInstance();
         className = getActivity().getClass().getSimpleName();
+
+        if (className.equals("SearchActivity")) {
+            switchCompat.setVisibility(View.VISIBLE);
+        }
 
         list = new ArrayList<>();
         adapter = new PostAdapter(getContext(),list);
@@ -216,6 +224,17 @@ public class TempPostFragment extends Fragment {
                 fetchData(true);
             }
         });
+        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    sortByPrice = true;
+                } else {
+                    sortByPrice = false;
+                }
+                fetchData(true);
+            }
+        });
     }
 
     private void fetchData(boolean clear) {
@@ -255,12 +274,18 @@ public class TempPostFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
+                    int orig = list.size();
                     if (clear) {
                         list.clear();
                     }
                     for (DocumentSnapshot document : task.getResult()) {
                         Post post = document.toObject(Post.class);
                         list.add(post);
+                    }
+                    if (sortByPrice) {
+                        Collections.sort(list, (a, b) -> {
+                            return Double.compare(a.price, b.price);
+                        });
                     }
                     adapter.notifyDataSetChanged();
                     handler.postDelayed(new Runnable() {

@@ -155,7 +155,7 @@ public class RegisterActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         updateUserProfile(username);
                         newUser.userId = user.getUid();
-                        sendEmailVerification();
+                        sendEmailVerification(user);
                         String userid = user.getUid();
                         mDatabase.child("users").child(userid).setValue(newUser);
                         FirebaseUtil.currentUserDetails().set(newUser);
@@ -167,8 +167,7 @@ public class RegisterActivity extends AppCompatActivity {
                 });
     }
 
-    private void sendEmailVerification() {
-        final FirebaseUser user = mAuth.getCurrentUser();
+    private void sendEmailVerification(FirebaseUser user) {
         user.sendEmailVerification()
                 .addOnCompleteListener(task -> Toast.makeText(RegisterActivity.this, "Please check your email for verifying", Toast.LENGTH_SHORT).show());
     }

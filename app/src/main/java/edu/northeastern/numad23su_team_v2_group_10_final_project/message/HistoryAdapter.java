@@ -1,10 +1,16 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.message;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,6 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.io.File;
+import java.io.IOException;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.ChatActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
@@ -44,6 +55,8 @@ public class HistoryAdapter extends FirestoreRecyclerAdapter<ChatRoom, HistoryAd
                             holder.username.setText(otherUser.getName());
                         }
 
+                        holder.setupUserProfileImage(otherUser.getUserId());
+
                         if (lastMessageSentByMe) {
                             holder.lastReceived.setText("You: " + model.getLastMessage());
                         } else {
@@ -74,6 +87,7 @@ public class HistoryAdapter extends FirestoreRecyclerAdapter<ChatRoom, HistoryAd
         TextView lastReceivedTime;
         TextView lasReceivedDate;
         TextView lastReceived;
+        ImageView userImage;
 
         public ChatRoomsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -81,6 +95,23 @@ public class HistoryAdapter extends FirestoreRecyclerAdapter<ChatRoom, HistoryAd
             lastReceived = itemView.findViewById(R.id.last_msg_received);
             lastReceivedTime = itemView.findViewById(R.id.last_msg_received_time);
             lasReceivedDate = itemView.findViewById(R.id.last_msg_received_date);
+            userImage = itemView.findViewById(R.id.userImage);
+        }
+
+        public void setupUserProfileImage(String userID) {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            String path = "images/avatar/" + userID + "/000.jpg";
+            StorageReference storageRef = storage.getReference(path);
+            try {
+                File localfile = File.createTempFile("tempfile", ".jpg");
+                storageRef.getFile(localfile)
+                        .addOnSuccessListener(taskSnapshot -> {
+                            Bitmap bitmap = BitmapFactory.decodeFile(localfile.getAbsolutePath());
+                            userImage.setImageBitmap(bitmap);
+                        }).addOnFailureListener(e -> Log.d(TAG, "Failed to load user profile image."));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

@@ -9,7 +9,7 @@
     android:elevation="2dp">
 
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/userImage"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_marginStart="5dp"

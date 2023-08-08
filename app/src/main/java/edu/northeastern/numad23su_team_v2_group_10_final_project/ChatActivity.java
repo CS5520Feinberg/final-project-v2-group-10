@@ -1,10 +1,17 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import androidx.annotation.Nullable;
@@ -17,8 +24,12 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.message.ChatAdapter;
@@ -37,6 +48,7 @@ public class ChatActivity extends AppCompatActivity {
     EditText messageInput;
     ImageButton sendMessageBtn;
     ImageButton backBtn;
+    ImageView otherUserImage;
     Toolbar toolbar;
     RecyclerView recyclerView;
     ChatAdapter chatAdapter;
@@ -64,6 +76,9 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.chat_recycler_view);
         //toolbar = findViewById(R.id.chat_toolbar);
 
+        otherUserImage = findViewById(R.id.userImageView);
+        setupUserProfileImage(otherUser.getUserId());
+
         backBtn.setOnClickListener(v -> {
             onBackPressed();
         });
@@ -75,6 +90,22 @@ public class ChatActivity extends AppCompatActivity {
         });
         getOrCreateChatRoom();
         setupChatRecyclerView();
+    }
+
+    private void setupUserProfileImage(String userID) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        String path = "images/avatar/" + userID + "/000.jpg";
+        StorageReference storageRef = storage.getReference(path);
+        try {
+            File localfile = File.createTempFile("tempfile", ".jpg");
+            storageRef.getFile(localfile)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        Bitmap bitmap = BitmapFactory.decodeFile(localfile.getAbsolutePath());
+                        otherUserImage.setImageBitmap(bitmap);
+                    }).addOnFailureListener(e -> Log.d(TAG, "Failed to load user profile image."));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void setupChatRecyclerView() {

@@ -144,9 +144,11 @@ public class MainActivity extends AppCompatActivity {
             // activity for post
             String postType = extras.getString("postType");
             String postId = extras.getString("postId");
+            String pos = extras.getString("pos");
             Intent i = new Intent(this, DisplayPostActivity.class);
             i.putExtra("postType", postType);
             i.putExtra("postId", postId);
+            i.putExtra("pos", pos);
             startActivity(i);
         } else {
             if (savedInstanceState == null || !savedInstanceState.containsKey("SEL")) {

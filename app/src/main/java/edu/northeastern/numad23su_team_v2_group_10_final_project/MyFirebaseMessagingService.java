@@ -60,10 +60,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 // post notification
                 String postType = data.get("postType");
                 String postId = data.get("postId");
+                String posStr = data.get("pos");
 
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                Intent i = new Intent(getApplicationContext(), DisplayPostActivity.class);
                 i.putExtra("postType", postType);
                 i.putExtra("postId", postId);
+                i.putExtra("pos", posStr);
                 PendingIntent pIntent = null;
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
                     pIntent = PendingIntent.getActivity

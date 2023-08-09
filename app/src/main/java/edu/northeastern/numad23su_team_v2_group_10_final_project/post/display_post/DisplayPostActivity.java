@@ -104,6 +104,7 @@ public class DisplayPostActivity extends AppCompatActivity {
     TextView tv_reply_to;
 
     int width = 0;
+    int pos = -1;
     Post post;
     String postUserId;
     List<UploadImage> list = new ArrayList<>();
@@ -128,6 +129,11 @@ public class DisplayPostActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         if (bundle == null || !bundle.containsKey("postType") || !bundle.containsKey("postId")) {
             finish();
+        }
+        if (bundle.containsKey("pos")) {
+            pos = Integer.parseInt(bundle.getString("pos"));
+        } else {
+            pos = -1;
         }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mAuth = FirebaseAuth.getInstance();
@@ -355,6 +361,8 @@ public class DisplayPostActivity extends AppCompatActivity {
                             tv_reply_to.setText("");
                             tv_reply_to.setVisibility(View.GONE);
                             comment.setText("");
+                            int size = replies.size();
+                            pos = size;
                             fetchReplySingle(replyId, true, -1);
 
                             // notification
@@ -367,6 +375,7 @@ public class DisplayPostActivity extends AppCompatActivity {
                             notification.put("postTitle", post.title);
                             notification.put("text", text);
                             notification.put("userName", curUserName);
+                            notification.put("pos", String.valueOf(size));
 
                             String receiverId = post.userId;
                             mFireStoreRef.collection("users").document(receiverId).collection("notifications")
@@ -400,6 +409,7 @@ public class DisplayPostActivity extends AppCompatActivity {
                                     tv_reply_to.setText("");
                                     tv_reply_to.setVisibility(View.GONE);
                                     comment.setText("");
+                                    pos = source;
                                     fetchReplySingle(replyId, false, source); // index is set
 
                                     // notification
@@ -412,6 +422,7 @@ public class DisplayPostActivity extends AppCompatActivity {
                                     notification.put("postTitle", post.title);
                                     notification.put("text", text);
                                     notification.put("userName", curUserName);
+                                    notification.put("pos",String.valueOf(source));
 
                                     String receiverId = reply.replyToUserId;
                                     mFireStoreRef.collection("users").document(receiverId).collection("notifications")
@@ -486,8 +497,12 @@ public class DisplayPostActivity extends AppCompatActivity {
                                     replyOuterAdapter.notifyItemChanged(finalIndex);
                                 }
                             });
-
                 }
+                if (pos != -1) {
+                    recyclerView.getLayoutManager().scrollToPosition(pos);
+                    pos = -1;
+                }
+
             }
         });
     }
@@ -623,6 +638,10 @@ public class DisplayPostActivity extends AppCompatActivity {
                         reply.replyList = new ArrayList<>();
                         replies.add(reply);
                         replyOuterAdapter.notifyItemInserted(replies.size() - 1);
+                        if (pos != -1) {
+                            recyclerView.getLayoutManager().scrollToPosition(pos);
+                            pos = -1;
+                        }
                     }
                 }
             });
@@ -643,6 +662,10 @@ public class DisplayPostActivity extends AppCompatActivity {
                             return a.timestamp.compareTo(b.timestamp);
                         });
                         replyOuterAdapter.notifyDataSetChanged();
+                        if (pos != -1) {
+                            recyclerView.getLayoutManager().scrollToPosition(pos);
+                            pos = -1;
+                        }
                     }
                 }
             });

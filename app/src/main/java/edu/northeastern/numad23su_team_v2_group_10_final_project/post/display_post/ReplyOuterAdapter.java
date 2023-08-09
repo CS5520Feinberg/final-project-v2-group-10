@@ -150,7 +150,7 @@ public class ReplyOuterAdapter extends RecyclerView.Adapter<ReplyHolder> {
                     replyViewModel.setReplyRootId(reply.replyId);
                     replyViewModel.setReplyToName(userName[0]);
                 }
-                replyViewModel.setIndex(holder.getAdapterPosition());
+                replyViewModel.setIndex(mark);
                 replyViewModel.setTrigger(!replyViewModel.getTrigger().getValue());
             }
         });

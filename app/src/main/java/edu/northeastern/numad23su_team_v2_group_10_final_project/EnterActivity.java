@@ -12,6 +12,8 @@ import android.widget.Button;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+import edu.northeastern.numad23su_team_v2_group_10_final_project.post.display_post.DisplayPostActivity;
+
 public class EnterActivity extends AppCompatActivity {
 
     Button btn_register;
@@ -38,15 +40,14 @@ public class EnterActivity extends AppCompatActivity {
         });
         Bundle extras = getIntent().getExtras();
         if (extras != null && extras.containsKey("postId")) {
-            if (FirebaseAuth.getInstance().getCurrentUser() != null
-            && FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()) {
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                Intent i = new Intent(EnterActivity.this, DisplayPostActivity.class);
                 String postType = extras.getString("postType");
                 String postId = extras.getString("postId");
+                String pos = extras.getString("pos");
                 i.putExtra("postType", postType);
                 i.putExtra("postId", postId);
+                i.putExtra("pos", pos);
                 startActivity(i);
-            }
         }
     }
 

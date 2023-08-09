@@ -49,6 +49,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.databinding.ActivityMainBinding;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.message.MessageFragment;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.post.display_post.DisplayPostActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.product.ProductFragment;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.profile.ProfileFragment;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.search.SearchActivity;
@@ -139,6 +140,14 @@ public class MainActivity extends AppCompatActivity {
             menuItem.setChecked(true);
             invalidateOptionsMenu();
             replaceFragment("profile");
+        } else if (extras != null && extras.containsKey("postType")) {
+            // activity for post
+            String postType = extras.getString("postType");
+            String postId = extras.getString("postId");
+            Intent i = new Intent(this, DisplayPostActivity.class);
+            i.putExtra("postType", postType);
+            i.putExtra("postId", postId);
+            startActivity(i);
         } else {
             if (savedInstanceState == null || !savedInstanceState.containsKey("SEL")) {
                 View view = binding.bottomNavigationView.findViewById(R.id.product);

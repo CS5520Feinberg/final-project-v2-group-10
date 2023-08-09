@@ -621,8 +621,8 @@ public class DisplayPostActivity extends AppCompatActivity {
                         DocumentSnapshot documentSnapshot = task.getResult();
                         Reply reply = documentSnapshot.toObject(Reply.class);
                         reply.replyList = new ArrayList<>();
-                        replies.add(0, reply);
-                        replyOuterAdapter.notifyItemInserted(0);
+                        replies.add(reply);
+                        replyOuterAdapter.notifyItemInserted(replies.size() - 1);
                     }
                 }
             });

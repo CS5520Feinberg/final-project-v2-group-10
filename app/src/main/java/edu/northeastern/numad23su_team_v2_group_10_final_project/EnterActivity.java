@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class EnterActivity extends AppCompatActivity {
 
     Button btn_register;
@@ -34,6 +36,18 @@ public class EnterActivity extends AppCompatActivity {
             Intent i = new Intent(EnterActivity.this, RegisterActivity.class);
             startActivity(i);
         });
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.containsKey("postId")) {
+            if (FirebaseAuth.getInstance().getCurrentUser() != null
+            && FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()) {
+                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                String postType = extras.getString("postType");
+                String postId = extras.getString("postId");
+                i.putExtra("postType", postType);
+                i.putExtra("postId", postId);
+                startActivity(i);
+            }
+        }
     }
 
 //    private void showCustomActionBar() {

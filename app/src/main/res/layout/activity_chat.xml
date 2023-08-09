@@ -22,7 +22,8 @@
             android:background="@android:color/transparent"
             android:contentDescription="Back"
             android:padding="10dp"
-            android:src="@drawable/baseline_arrow_back_24" />
+            android:src="@drawable/baseline_arrow_back_24"
+            app:tint="@color/white"/>
 
         <!-- User Image -->
         <com.google.android.material.imageview.ShapeableImageView
@@ -38,6 +39,7 @@
             app:shapeAppearanceOverlay="@style/circular"
             app:srcCompat="@drawable/baseline_person_24"
             app:strokeColor="@color/purple_500"
+            app:tint="@color/white"
             app:strokeWidth="5dp" />
 
         <TextView
@@ -45,6 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
+            android:textColor="@color/white"
             android:text="Username"
             android:textSize="20dp"
             android:textStyle="bold" />

@@ -39,7 +39,7 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:src="@drawable/baseline_edit_24"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:backgroundTint="@color/lightGreen"
                     app:layout_constraintBottom_toBottomOf="@+id/userImage"
                     app:layout_constraintEnd_toEndOf="@+id/userImage" />

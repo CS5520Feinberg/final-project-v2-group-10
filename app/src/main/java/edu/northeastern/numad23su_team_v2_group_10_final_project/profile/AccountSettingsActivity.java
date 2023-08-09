@@ -89,7 +89,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_settings);
-        showCustomActionBar();
+//        showCustomActionBar();
 
         updateProfleBtn = findViewById(R.id.updateProfileBtn);
         updateUsername = findViewById(R.id.updateUsername);
@@ -296,12 +296,12 @@ public class AccountSettingsActivity extends AppCompatActivity {
         });
     }
 
-    private void showCustomActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowCustomEnabled(true);
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflater.inflate(R.layout.neulogo_image, null);
-        actionBar.setCustomView(v);
-    }
+//    private void showCustomActionBar() {
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setDisplayShowCustomEnabled(true);
+//        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        View v = inflater.inflate(R.layout.neulogo_image, null);
+//        actionBar.setCustomView(v);
+//    }
 
 }

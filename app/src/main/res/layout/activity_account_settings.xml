@@ -40,7 +40,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:backgroundTint="@color/lightGreen"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     android:clickable="true"
                     android:src="@drawable/ic_baseline_edit_24"
                     app:layout_constraintBottom_toBottomOf="parent"

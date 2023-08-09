@@ -38,7 +38,7 @@ public class LogInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        showCustomActionBar();
+//        showCustomActionBar();
         setContentView(R.layout.activity_log_in);
 
         TextView redirectToSignup = findViewById(R.id.signupRedirectText);
@@ -89,11 +89,11 @@ public class LogInActivity extends AppCompatActivity {
         finish();
     }
 
-    private void showCustomActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowCustomEnabled(true);
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflater.inflate(R.layout.neulogo_image, null);
-        actionBar.setCustomView(v);
-    }
+//    private void showCustomActionBar() {
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setDisplayShowCustomEnabled(true);
+//        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        View v = inflater.inflate(R.layout.neulogo_image, null);
+//        actionBar.setCustomView(v);
+//    }
 }

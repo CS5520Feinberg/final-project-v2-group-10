@@ -68,7 +68,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        showCustomActionBar();
+//        showCustomActionBar();
         setContentView(R.layout.activity_register);
 
         TextView redirectToLogin = findViewById(R.id.loginRedirectText);
@@ -215,11 +215,11 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void showCustomActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowCustomEnabled(true);
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflater.inflate(R.layout.neulogo_image, null);
-        actionBar.setCustomView(v);
-    }
+//    private void showCustomActionBar() {
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setDisplayShowCustomEnabled(true);
+//        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        View v = inflater.inflate(R.layout.neulogo_image, null);
+//        actionBar.setCustomView(v);
+//    }
 }

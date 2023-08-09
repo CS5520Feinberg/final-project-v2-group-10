@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -210,25 +211,34 @@ public class UploadImageActivity extends AppCompatActivity {
 
     private void selectImage() {
         Intent intent;
-        intent = new Intent(
-                Intent.ACTION_PICK,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent = new Intent();
+        intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        startActivityForResult(intent, IMAGE_QUEST);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), IMAGE_QUEST);
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == IMAGE_QUEST && data != null && data.getData() != null) {
+        if (requestCode == IMAGE_QUEST && data != null && data != null) {
             ViewGroup parent = (ViewGroup) recyclerView.getParent();
             width = parent.getWidth();
-            int count = data.getClipData().getItemCount();
-            for (int i = 0; i < count; i++) {
-                Uri imageUri = data.getClipData().getItemAt(i).getUri();
+            ClipData imageNames = data.getClipData();
+            int count = 0;
+            if (imageNames != null) {
+                count = imageNames.getItemCount();
+                for (int i = 0; i < count; i++) {
+                    Uri imageUri = data.getClipData().getItemAt(i).getUri();
+                    list.add(new UploadImage(imageUri.toString(), getPath(this, imageUri), width / 2));
+                }
+            } else {
+                count = 1;
+                Uri imageUri = data.getData();
                 list.add(new UploadImage(imageUri.toString(), getPath(this, imageUri), width / 2));
             }
+
             adapter.notifyItemRangeInserted(list.size() - count, count);
         } else if (requestCode == CAMERA_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {

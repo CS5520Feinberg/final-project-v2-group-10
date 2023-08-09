@@ -40,7 +40,7 @@ public class EnterActivity extends AppCompatActivity {
         });
         Bundle extras = getIntent().getExtras();
         if (extras != null && extras.containsKey("postId")) {
-                Intent i = new Intent(EnterActivity.this, DisplayPostActivity.class);
+                Intent i = new Intent(EnterActivity.this, MainActivity.class);
                 String postType = extras.getString("postType");
                 String postId = extras.getString("postId");
                 String pos = extras.getString("pos");

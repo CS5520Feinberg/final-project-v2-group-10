@@ -62,7 +62,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 String postId = data.get("postId");
                 String posStr = data.get("pos");
 
-                Intent i = new Intent(getApplicationContext(), DisplayPostActivity.class);
+                Intent i = new Intent(getApplicationContext(), MainActivity.class);
                 i.putExtra("postType", postType);
                 i.putExtra("postId", postId);
                 i.putExtra("pos", posStr);

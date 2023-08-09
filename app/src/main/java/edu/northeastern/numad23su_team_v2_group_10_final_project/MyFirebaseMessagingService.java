@@ -1,10 +1,12 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -12,6 +14,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.Worker;
@@ -24,9 +27,14 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
+import edu.northeastern.numad23su_team_v2_group_10_final_project.post.Utils;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.post.display_post.DisplayPostActivity;
+
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
+    String[] postTypes = Utils.getPostTypes();
+    int index = 0;
 
     // [START receive_message]
     @Override
@@ -34,6 +42,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // TODO(developer): Handle FCM messages here.
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
+
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
@@ -47,9 +56,38 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 handleNow();
             }
             Map<String, String> data = remoteMessage.getData();
-            if(data.get("type").equals("1")) {
+            if(data.get("postType") != null) {
                 // post notification
+                String postType = data.get("postType");
+                String postId = data.get("postId");
 
+                Intent i = new Intent(getApplicationContext(), DisplayPostActivity.class);
+                i.putExtra("postType", postType);
+                i.putExtra("postId", postId);
+                PendingIntent pIntent = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                    pIntent = PendingIntent.getActivity
+                            (getApplicationContext() , 0, i, PendingIntent.FLAG_MUTABLE);
+                }
+                else
+                {
+                    pIntent = PendingIntent.getActivity
+                            (getApplicationContext(), 0,i, PendingIntent.FLAG_ONE_SHOT);
+                }
+                String channelId = getString(R.string.channel_id);
+                NotificationCompat.Builder notifyBuild = new NotificationCompat.Builder(getApplicationContext(), channelId)
+                        .setWhen(System.currentTimeMillis())
+                        .setDefaults(NotificationCompat.DEFAULT_ALL)
+                        .setContentTitle(remoteMessage.getNotification().getTitle())
+                        .setContentText(remoteMessage.getNotification().getBody())
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setCategory(Notification.CATEGORY_MESSAGE)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setAutoCancel(true)
+                        .setContentIntent(pIntent);
+                NotificationManager notificationManager =
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.notify(index++, notifyBuild.build());
             }
 
         }

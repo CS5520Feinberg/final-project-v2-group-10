@@ -362,7 +362,7 @@ public class DisplayPostActivity extends AppCompatActivity {
                             if (curUserName == null) curUserName = "";
                             Map<String,Object> notification = new HashMap<>();
                             notification.put("type", 1);
-                            notification.put("postType", post.type.toString());
+                            notification.put("postType", postType);
                             notification.put("postId", post.postId);
                             notification.put("postTitle", post.title);
                             notification.put("text", text);

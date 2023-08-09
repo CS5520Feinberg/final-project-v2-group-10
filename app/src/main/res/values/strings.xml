@@ -11,5 +11,8 @@
     <string name="select">Select Campus</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="channel_name">Notification Name</string>s
+    <string name="channel_description">Notification Channel for the app</string>
+    <string name="channel_id">Channel_Name</string>
 
 </resources>

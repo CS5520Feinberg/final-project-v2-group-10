@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     tools:context=".LogInActivity">
 
     <LinearLayout
@@ -61,7 +62,7 @@
         android:layout_below="@id/loginPwd"
         android:layout_centerHorizontal="true"
         android:layout_margin="20dp"
-        android:backgroundTint="@color/design_default_color_primary"
+        android:backgroundTint="@color/lightGreen"
         android:padding="10dp"
         android:layout_gravity="center"
         android:text="LOGIN" />

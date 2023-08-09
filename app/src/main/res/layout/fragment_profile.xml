@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     tools:context=".profile.ProfileFragment">
 
     <ScrollView
@@ -25,10 +26,8 @@
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:layout_marginTop="40dp"
-                    android:background="@color/purple"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:strokeWidth="5dp"
-                    app:strokeColor="@color/white"
                     app:layout_constraintHorizontal_bias="0.522"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -42,7 +41,7 @@
                     android:clickable="true"
                     android:src="@drawable/baseline_edit_24"
                     android:tint="@color/white"
-                    app:backgroundTint="@color/white"
+                    app:backgroundTint="@color/lightGreen"
                     app:layout_constraintBottom_toBottomOf="@+id/userImage"
                     app:layout_constraintEnd_toEndOf="@+id/userImage" />
 
@@ -147,7 +146,7 @@
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center"
                         android:layout_margin="15dp"
-                        android:backgroundTint="@color/design_default_color_primary"
+                        android:backgroundTint="@color/lightGreen"
                         android:padding="10dp"
                         android:text="Logout" />
 

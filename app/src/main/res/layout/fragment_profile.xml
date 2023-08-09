@@ -146,7 +146,7 @@
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center"
                         android:layout_margin="15dp"
-                        android:backgroundTint="@color/design_default_color_primary"
+                        android:backgroundTint="@color/lightGreen"
                         android:padding="10dp"
                         android:text="Logout" />
 

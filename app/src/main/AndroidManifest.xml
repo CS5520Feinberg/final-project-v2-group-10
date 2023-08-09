@@ -104,7 +104,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".ChatActivity"
+            android:name=".message.ChatActivity"
             android:exported="false"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:windowSoftInputMode="adjustResize">

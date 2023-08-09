@@ -65,7 +65,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import edu.northeastern.numad23su_team_v2_group_10_final_project.ChatActivity;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.message.ChatActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.MainActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.Post;

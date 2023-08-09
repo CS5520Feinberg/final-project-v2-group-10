@@ -1,5 +1,6 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.service;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -8,6 +9,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -15,6 +17,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import java.util.ArrayList;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.post.create_post.AddPostActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.public_fragments.TempPostFragment;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.public_fragments.FSAdapter;
 
@@ -79,6 +82,15 @@ public class ServiceFragment extends Fragment {
         ArrayList<String> fragmentTitle = new ArrayList<>();
         fragmentTitle.add("I offer");
         fragmentTitle.add("I need");
+        Button fab = view.findViewById(R.id.addButton);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getActivity(), AddPostActivity.class);
+                startActivity(i);
+            }
+        });
 
         new TabLayoutMediator(tabLayout, viewpager,
                 (tab, position) -> tab.setText(fragmentTitle.get(position))

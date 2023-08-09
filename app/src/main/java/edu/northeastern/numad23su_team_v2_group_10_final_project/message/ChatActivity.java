@@ -1,4 +1,4 @@
-package edu.northeastern.numad23su_team_v2_group_10_final_project;
+package edu.northeastern.numad23su_team_v2_group_10_final_project.message;
 
 import static android.content.ContentValues.TAG;
 
@@ -11,9 +11,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.Toolbar;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -22,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
@@ -32,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
+import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.message.ChatAdapter;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.ChatMessage;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.ChatRoom;
@@ -57,14 +60,14 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_message_children_chat);
+        setContentView(R.layout.activity_chat);
 
         //get the otherUser
         otherUser = AndroidUtil.getUserModelFromIntent(getIntent());
         chatroomId = FirebaseUtil.getChatroomId(FirebaseUtil.currentUserId(), otherUser.getUserId());
 
         otherUsername = findViewById(R.id.display_username);
-        if (otherUser.getUserId().equals(FirebaseUtil.currentUserId())){
+        if (otherUser.getUserId().equals(FirebaseUtil.currentUserId())) {
             otherUsername.setText(otherUser.getName() + " (Me)");
         } else {
             otherUsername.setText(otherUser.getName());
@@ -85,7 +88,9 @@ public class ChatActivity extends AppCompatActivity {
 
         sendMessageBtn.setOnClickListener(v -> {
             String message = messageInput.getText().toString().trim();
-            if (message.isEmpty()) {return;}
+            if (message.isEmpty()) {
+                return;
+            }
             sendMessageToUser(message);
         });
         getOrCreateChatRoom();
@@ -113,10 +118,10 @@ public class ChatActivity extends AppCompatActivity {
                 .orderBy("timestamp", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<ChatMessage> options = new FirestoreRecyclerOptions.Builder<ChatMessage>()
-                .setQuery(query,ChatMessage.class)
+                .setQuery(query, ChatMessage.class)
                 .build();
 
-        chatAdapter = new ChatAdapter(options,getApplicationContext());
+        chatAdapter = new ChatAdapter(options, getApplicationContext());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setReverseLayout(true);
@@ -161,5 +166,26 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (chatRoom.getLastMessage() == null) {
+            FirebaseUtil.getChatroomReference(chatroomId).delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Log.d(TAG, "No message sent, chat deleted successfully.");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, "Error deleting document");
+                        }
+                    });
+        }
     }
 }

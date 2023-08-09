@@ -24,7 +24,6 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.io.IOException;
 
-import edu.northeastern.numad23su_team_v2_group_10_final_project.ChatActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.ChatRoom;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
@@ -78,7 +77,7 @@ public class HistoryAdapter extends FirestoreRecyclerAdapter<ChatRoom, HistoryAd
     @NonNull
     @Override
     public ChatRoomsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.fragment_message_children_chat_history_items, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.fragment_message_chat_history_items, parent, false);
         return new ChatRoomsViewHolder(view);
     }
 

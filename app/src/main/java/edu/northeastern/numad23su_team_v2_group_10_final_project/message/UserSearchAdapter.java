@@ -24,17 +24,16 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.io.IOException;
 
-import edu.northeastern.numad23su_team_v2_group_10_final_project.ChatActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.util.AndroidUtil;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.util.FirebaseUtil;
 
-public class UsersAdapter extends FirestoreRecyclerAdapter<User, UsersAdapter.UsersViewHolder> {
+public class UserSearchAdapter extends FirestoreRecyclerAdapter<User, UserSearchAdapter.UsersViewHolder> {
 
     Context context;
 
-    public UsersAdapter(@NonNull FirestoreRecyclerOptions<User> options, Context context) {
+    public UserSearchAdapter(@NonNull FirestoreRecyclerOptions<User> options, Context context) {
         super(options);
         this.context = context;
     }
@@ -68,7 +67,7 @@ public class UsersAdapter extends FirestoreRecyclerAdapter<User, UsersAdapter.Us
     @NonNull
     @Override
     public UsersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.fragment_message_children_users_items, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.fragment_message_users_search_items, parent, false);
         return new UsersViewHolder(view);
     }
 

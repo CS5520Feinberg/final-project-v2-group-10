@@ -1,9 +1,13 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -12,6 +16,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -61,6 +68,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        showCustomActionBar();
         setContentView(R.layout.activity_register);
 
         TextView redirectToLogin = findViewById(R.id.loginRedirectText);
@@ -163,6 +171,7 @@ public class RegisterActivity extends AppCompatActivity {
                         LoginActivity();
                     } else {
                         Toast.makeText(RegisterActivity.this, "Failed to register user!", Toast.LENGTH_SHORT).show();
+                        Log.w(TAG, "Failed to register user!");
                     }
                 });
     }
@@ -185,9 +194,12 @@ public class RegisterActivity extends AppCompatActivity {
 
         UploadTask uploadTask = avatarRef.putBytes(data);
         uploadTask.addOnFailureListener(exception -> {
-            Toast.makeText(RegisterActivity.this, "Failed to upload Image!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(RegisterActivity.this, "Failed to upload Image!", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Failed to upload Image!");
         }).addOnSuccessListener(taskSnapshot -> {
-            Toast.makeText(RegisterActivity.this, "Upload Image Successfully!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(RegisterActivity.this, "Upload Image Successfully!", Toast.LENGTH_SHORT).show();
+            Log.i(TAG, "Upload Image Successfully!");
+
         });
     }
 
@@ -197,8 +209,17 @@ public class RegisterActivity extends AppCompatActivity {
                 .setDisplayName(username).build();
         user.updateProfile(profileUpdates).addOnCompleteListener(task1 -> {
             if (task1.isSuccessful()) {
-                Toast.makeText(RegisterActivity.this, "User Profile Updated", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(RegisterActivity.this, "User Profile Updated", Toast.LENGTH_SHORT).show();
+                Log.i(TAG, "User Profile Updated");
             }
         });
+    }
+
+    private void showCustomActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflater.inflate(R.layout.neulogo_image, null);
+        actionBar.setCustomView(v);
     }
 }

@@ -35,7 +35,7 @@ public class MessageFragment extends Fragment {
         FSAdapter vpAdapter = new FSAdapter(this);
 
         vpAdapter.addFragment(new HistoryFragment());
-        vpAdapter.addFragment(new UsersFragment());
+        vpAdapter.addFragment(new UserSearchFragment());
         viewpager.setAdapter(vpAdapter);
 
         ArrayList<String> fragmentTitle = new ArrayList<>();

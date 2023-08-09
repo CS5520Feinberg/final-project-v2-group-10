@@ -19,14 +19,14 @@ import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.util.FirebaseUtil;
 
-public class UsersFragment extends Fragment {
+public class UserSearchFragment extends Fragment {
     private static final String TAG = "Campus Help";
     EditText searchInput;
     ImageButton searchButton;
 
     RecyclerView recyclerView;
-    UsersAdapter usersAdapter;
-    public UsersFragment(){
+    UserSearchAdapter userSearchAdapter;
+    public UserSearchFragment(){
 
     }
 
@@ -39,7 +39,7 @@ public class UsersFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_message_children_users, container, false);
+        View view = inflater.inflate(R.layout.fragment_message_users_search, container, false);
 
         searchInput = view.findViewById(R.id.search_username_input);
         searchButton = view.findViewById(R.id.search_user_btn);
@@ -68,24 +68,24 @@ public class UsersFragment extends Fragment {
 
         Log.d(TAG, "Number of items in Firestore query result: " + options.getSnapshots().size());
 
-        usersAdapter = new UsersAdapter(options,requireContext());
+        userSearchAdapter = new UserSearchAdapter(options,requireContext());
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerView.setAdapter(usersAdapter);
-        usersAdapter.startListening();
+        recyclerView.setAdapter(userSearchAdapter);
+        userSearchAdapter.startListening();
     }
 
 
     @Override
     public void onStart() {
         super.onStart();
-        //usersAdapter.startListening();
+        //userSearchAdapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        //if (usersAdapter!=null){
-            //usersAdapter.stopListening();
+        //if (userSearchAdapter!=null){
+            //userSearchAdapter.stopListening();
         //}
     }
 
@@ -93,8 +93,8 @@ public class UsersFragment extends Fragment {
     public void onResume() {
         searchInput.setText("");
         super.onResume();
-        //if (usersAdapter!=null){
-            //usersAdapter.startListening();
+        //if (userSearchAdapter!=null){
+            //userSearchAdapter.startListening();
         //}
     }
 }

@@ -2,6 +2,7 @@ package edu.northeastern.numad23su_team_v2_group_10_final_project.profile;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -9,6 +10,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -17,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -85,6 +89,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_settings);
+        showCustomActionBar();
 
         updateProfleBtn = findViewById(R.id.updateProfileBtn);
         updateUsername = findViewById(R.id.updateUsername);
@@ -289,6 +294,14 @@ public class AccountSettingsActivity extends AppCompatActivity {
             Toast.makeText(AccountSettingsActivity.this, "Upload Image Successfully!", Toast.LENGTH_SHORT).show();
 
         });
+    }
+
+    private void showCustomActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflater.inflate(R.layout.neulogo_image, null);
+        actionBar.setCustomView(v);
     }
 
 }

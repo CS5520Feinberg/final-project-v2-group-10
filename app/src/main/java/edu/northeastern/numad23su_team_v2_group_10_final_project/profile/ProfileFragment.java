@@ -134,43 +134,42 @@ public class ProfileFragment extends Fragment {
         userViewModel.getUser().observe(getViewLifecycleOwner(), userId -> {
             // UI update here for userId
             this.userId = userId;
-            Log.d("Update UI for user: ", userId);
+            if (this.userId != null) {
+                Log.d("Update UI for user: ", userId);
+                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                DatabaseReference userRef = mDatabase.child("users").child(userId);
+                userRef.addValueEventListener(new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        User dbuser = snapshot.getValue(User.class);
+                        if (dbuser != null) {
+                            Log.d(TAG, "User name: " + dbuser.getName());
+                            userName = view.findViewById(R.id.userName);
+                            userEmail = view.findViewById(R.id.userEmail);
+                            userName.setText(dbuser.getName());
+                            userEmail.setText(dbuser.getEmail());
+
+                        } else {
+                            Log.w(TAG, "No user data found.");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.w(TAG, "Failed to read value.", error.toException());
+                    }
+                });
+
+                displayLastSeenLocation(userId);
+            } else {
+                Log.d(TAG, "No current user.");
+            }
         });
         logout = getActivity();
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            String userId = user.getUid();
 
-            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-            DatabaseReference userRef = mDatabase.child("users").child(userId);
-            userRef.addValueEventListener(new ValueEventListener() {
-
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    User dbuser = snapshot.getValue(User.class);
-                    if (dbuser != null) {
-                        Log.d(TAG, "User name: " + dbuser.getName());
-                        userName = view.findViewById(R.id.userName);
-                        userEmail = view.findViewById(R.id.userEmail);
-                        userName.setText(dbuser.getName());
-                        userEmail.setText(dbuser.getEmail());
-
-                    } else {
-                        Log.w(TAG, "No user data found.");
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.w(TAG, "Failed to read value.", error.toException());
-                }
-            });
-
-            displayLastSeenLocation(userId);
-        } else {
-            Log.d(TAG, "No current user.");
-        }
 
 
 

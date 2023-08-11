@@ -63,6 +63,8 @@ public class ProfileFragment extends Fragment {
     private UserViewModel userViewModel;
     private TextView userIdView;
     private Button accountSettingButton;
+    private Button chatsButton;
+    private Button logoutBtn;
 
     private TextView userName;
 
@@ -129,7 +131,16 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 //        userIdView = view.findViewById(R.id.user_id);
+        userImage = view.findViewById(R.id.userImage);
+        userPosts = view.findViewById(R.id.userPosts);
+        floatingActionButton = view.findViewById(R.id.floatingActionButton);
+        chatsButton = view.findViewById(R.id.chats);
+        logoutBtn = view.findViewById(R.id.logoutBtn);
         lastSeenLocation = view.findViewById(R.id.lastSeenLocation);
+        accountSettingButton = view.findViewById(R.id.accountSetting);
+        logout = getActivity();
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
         userViewModel = new ViewModelProvider(getActivity()).get(UserViewModel.class);
         userViewModel.getUser().observe(getViewLifecycleOwner(), userId -> {
             // UI update here for userId
@@ -138,7 +149,8 @@ public class ProfileFragment extends Fragment {
                 Log.d("Update UI for user: ", userId);
                 DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
                 DatabaseReference userRef = mDatabase.child("users").child(userId);
-                userRef.addValueEventListener(new ValueEventListener() {
+                // should be a single value listener
+                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -165,42 +177,48 @@ public class ProfileFragment extends Fragment {
             } else {
                 Log.d(TAG, "No current user.");
             }
+
+
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            String path = "images/avatar/" + userId + "/000.jpg";
+            StorageReference storageRef = storage.getReference(path);
+            try {
+                File localfile = File.createTempFile("tempfile" + userId, ".jpg");
+                storageRef.getFile(localfile)
+                        .addOnSuccessListener(taskSnapshot -> {
+                            Bitmap bitmap = BitmapFactory.decodeFile(localfile.getAbsolutePath());
+                            userImage.setImageBitmap(bitmap);
+                        }).addOnFailureListener(e -> Toast.makeText(logout, e.getMessage(), Toast.LENGTH_SHORT).show());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (!mAuth.getUid().equals(userId)) {
+                floatingActionButton.setVisibility(View.GONE);
+                accountSettingButton.setVisibility(View.GONE);
+                chatsButton.setVisibility(View.VISIBLE);
+                logoutBtn.setVisibility(View.GONE);
+            } else {
+                floatingActionButton.setVisibility(View.VISIBLE);
+                accountSettingButton.setVisibility(View.VISIBLE);
+                chatsButton.setVisibility(View.GONE);
+                logoutBtn.setVisibility(View.VISIBLE);
+            }
         });
-        logout = getActivity();
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
 
 
-
-
-        userPosts = view.findViewById(R.id.userPosts);
 
         userPosts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(getActivity(), DisplayUserPostListActivity.class);
-                i.putExtra("USER", userId);
+                i.putExtra("USER", userViewModel.getUser().getValue());
                 startActivity(i);
             }
         });
 
-        userImage = view.findViewById(R.id.userImage);
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        String path = "images/avatar/" + user.getUid() + "/000.jpg";
-        StorageReference storageRef = storage.getReference(path);
-        try {
-            File localfile = File.createTempFile("tempfile", ".jpg");
-            storageRef.getFile(localfile)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        Bitmap bitmap = BitmapFactory.decodeFile(localfile.getAbsolutePath());
-                        userImage.setImageBitmap(bitmap);
-                    }).addOnFailureListener(e -> Toast.makeText(logout, e.getMessage(), Toast.LENGTH_SHORT).show());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
 
-        floatingActionButton = view.findViewById(R.id.floatingActionButton);
 
         floatingActionButton.setOnClickListener(v -> {
             ImagePicker.Companion.with(this)
@@ -211,13 +229,20 @@ public class ProfileFragment extends Fragment {
         });
 
 
-        accountSettingButton = view.findViewById(R.id.accountSetting);
+
         accountSettingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AccountSettingsActivity.class);
                 startActivity(intent);
             }
+        });
+
+        logoutBtn.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(logout, LogInActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
         });
 
     }
@@ -251,20 +276,7 @@ public class ProfileFragment extends Fragment {
                         }
                     });
 
-
-
         }
-    }
-
-    public void onStart() {
-        super.onStart();
-        Button logoutBtn = logout.findViewById(R.id.logoutBtn);
-        logoutBtn.setOnClickListener(v -> {
-            FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(logout, LogInActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-        });
     }
 
     private void uploadUserImage(String userid, Bitmap bitmap) {

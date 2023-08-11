@@ -190,7 +190,7 @@ public class ProfileFragment extends Fragment {
             String path = "images/avatar/" + userId + "/000.jpg";
             StorageReference storageRef = storage.getReference(path);
             try {
-                File localfile = File.createTempFile("tempfile" + userId, ".jpg");
+                File localfile = File.createTempFile("tempfile", ".jpg");
                 storageRef.getFile(localfile)
                         .addOnSuccessListener(taskSnapshot -> {
                             Bitmap bitmap = BitmapFactory.decodeFile(localfile.getAbsolutePath());
@@ -227,7 +227,7 @@ public class ProfileFragment extends Fragment {
         chatsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseUtil.allUserCollectionReference().document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                FirebaseUtil.allUserCollectionReference().document(userViewModel.getUser().getValue()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {

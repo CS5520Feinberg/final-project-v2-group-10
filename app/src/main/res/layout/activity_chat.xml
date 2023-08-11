@@ -39,7 +39,6 @@
             app:shapeAppearanceOverlay="@style/circular"
             app:srcCompat="@drawable/baseline_person_24"
             app:strokeColor="@color/purple_500"
-            app:tint="@color/white"
             app:strokeWidth="5dp" />
 
         <TextView

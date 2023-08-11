@@ -105,6 +105,7 @@ public class ChatActivity extends AppCompatActivity {
             File localfile = File.createTempFile("tempfile", ".jpg");
             storageRef.getFile(localfile)
                     .addOnSuccessListener(taskSnapshot -> {
+                        Log.d("xx", localfile.toString());
                         Bitmap bitmap = BitmapFactory.decodeFile(localfile.getAbsolutePath());
                         otherUserImage.setImageBitmap(bitmap);
                     }).addOnFailureListener(e -> Log.d(TAG, "Failed to load user profile image."));

@@ -270,6 +270,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                             startActivity(intent);
                             finish();
                         } else {
+                            Toast.makeText(AccountSettingsActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             Log.w(TAG, "Update failed", task.getException());
                         }
                     }

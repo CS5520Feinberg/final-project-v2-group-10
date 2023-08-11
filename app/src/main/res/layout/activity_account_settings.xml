@@ -33,7 +33,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:shapeAppearanceOverlay="@style/circular"
-                    app:srcCompat="@drawable/baseline_person_24" />
+                    android:src="@drawable/default_image" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/floatingActionButton"

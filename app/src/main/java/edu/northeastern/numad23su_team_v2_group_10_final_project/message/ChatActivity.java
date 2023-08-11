@@ -25,10 +25,14 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +45,13 @@ import edu.northeastern.numad23su_team_v2_group_10_final_project.model.ChatRoom;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.util.AndroidUtil;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.util.FirebaseUtil;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -148,9 +159,60 @@ public class ChatActivity extends AppCompatActivity {
         FirebaseUtil.getChatroomMessageReference(chatroomId).add(chatMessage).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 messageInput.setText("");
+                sendNotificationToUser(message);
             }
         });
     }
+
+    void sendNotificationToUser(String message) {
+
+        FirebaseUtil.currentUserDetails().get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                User currentUser = task.getResult().toObject(User.class);
+                try {
+                    JSONObject jsonObject = new JSONObject();
+
+                    JSONObject notificationObj = new JSONObject();
+                    notificationObj.put("title", currentUser.getName());
+                    notificationObj.put("body", message);
+
+                    JSONObject dataObj = new JSONObject();
+                    dataObj.put("userId", currentUser.getUserId());
+
+                    jsonObject.put("notification", notificationObj);
+                    jsonObject.put("data", dataObj);
+
+                    DocumentReference documentReference = FirebaseUtil.allUserCollectionReference().document(otherUser.getUserId());
+                    documentReference.get().addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String token = documentSnapshot.getString("token");
+                            try {
+                                jsonObject.put("to", token);
+                            } catch (JSONException e) {
+                                throw new RuntimeException(e);
+                            }
+                            if (token != null) {
+                                Log.d(TAG, "Other user's token: " + token);
+                            } else {
+                                Log.d(TAG, "Token field doesn't exist in the document.");
+                            }
+                        } else {
+                            Log.d(TAG, "No token found.");
+                        }
+                    }).addOnFailureListener(e -> {
+                        System.out.println("Error retrieving document: " + e.getMessage());
+                    });
+                    callApi(jsonObject);
+
+                } catch (Exception e) {
+
+                }
+
+            }
+        });
+
+    }
+
 
     private void getOrCreateChatRoom() {
         FirebaseUtil.getChatroomReference(chatroomId).get().addOnCompleteListener(task -> {
@@ -187,5 +249,28 @@ public class ChatActivity extends AppCompatActivity {
                         }
                     });
         }
+    }
+
+    void callApi(JSONObject jsonObject) {
+        MediaType JSON = MediaType.get("application/json; charset=utf-8");
+        OkHttpClient client = new OkHttpClient();
+        String url = "https://fcm.googleapis.com/fcm/send";
+        RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .header("Authorization", "Bearer AAAAqePrhw0:APA91bGkc7E-Mr2iGjI-wOlJLliymyYwUKINw53X6e_69vvy2K1NsZrkoFueGB_QBuF43N0miOMwiHK85EUQhpzVxNbyFK5UABHeHR66lfbRmeoPO7DRz5id-HGIyynt8yWuselnseLe")
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+
+            }
+        });
     }
 }

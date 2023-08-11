@@ -89,9 +89,6 @@ public class RegisterActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         floatingActionButton = findViewById(R.id.floatingActionButton);
 
-        String defaultImageUri = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
-        Picasso.get().load(defaultImageUri).into(imageView);
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         floatingActionButton.setOnClickListener(v -> {

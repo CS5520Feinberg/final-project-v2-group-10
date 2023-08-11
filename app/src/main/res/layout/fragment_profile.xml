@@ -26,12 +26,11 @@
                     android:layout_height="150dp"
                     android:layout_marginTop="40dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:strokeWidth="5dp"
                     app:layout_constraintHorizontal_bias="0.522"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:shapeAppearanceOverlay="@style/circular"
-                    app:srcCompat="@drawable/baseline_person_24_1" />
+                    android:src="@drawable/default_image" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/floatingActionButton"

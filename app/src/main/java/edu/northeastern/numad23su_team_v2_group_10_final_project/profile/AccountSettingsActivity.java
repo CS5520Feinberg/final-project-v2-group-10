@@ -38,6 +38,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -48,6 +49,7 @@ import java.util.HashMap;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.LogInActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.util.FirebaseUtil;
 
 public class AccountSettingsActivity extends AppCompatActivity {
 
@@ -105,17 +107,18 @@ public class AccountSettingsActivity extends AppCompatActivity {
         floatingActionButton.setOnClickListener(v -> {
             ImagePicker.with(this)
                     .crop()//Crop image(Optional), Check Customization for more option
-                    .compress(1024)			//Final image size will be less than 1 MB(Optional)
-                    .maxResultSize(1080, 1080)	//Final image resolution will be less than 1080 x 1080(Optional)
+                    .compress(1024)            //Final image size will be less than 1 MB(Optional)
+                    .maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
                     .start();
         });
-
 
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser != null) {
             originalEmail = firebaseUser.getEmail();
             String userId = firebaseUser.getUid();
+
+            DocumentReference userFireRef = FirebaseUtil.currentUserDetails();
 
             DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
             DatabaseReference userRef = mDatabase.child("users").child(userId);
@@ -125,11 +128,12 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     User user = snapshot.getValue(User.class);
                     if (user != null) {
-                        Log.d(TAG, "User name: " + user.getName());
+                        Log.d(TAG, "User name (Realtime Database): " + user.getName());
+                        Log.d(TAG, "User email (Realtime Database): " + user.getEmail());
+                        Log.d(TAG, "User campus (Realtime Database): " + user.getCampus());
                         updateUsername.setText(user.getName());
                         updateEmail.setText(user.getEmail());
                         autoCompleteTextView.setText(user.getCampus(), false);
-
                     } else {
                         Log.w(TAG, "No user data found.");
                     }
@@ -138,6 +142,24 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     Log.w(TAG, "Failed to read value.", error.toException());
+                }
+            });
+
+            userFireRef.addSnapshotListener((documentSnapshot, e) -> {
+                if (e != null) {
+                    Log.w(TAG, "Error getting Firestore document.", e);
+                    return;
+                }
+
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    User userFirestore = documentSnapshot.toObject(User.class);
+                    if (userFirestore != null) {
+                        Log.d(TAG, "User name (Firestore): " + userFirestore.getName());
+                        Log.d(TAG, "User email (Firestore): " + userFirestore.getEmail());
+                        Log.d(TAG, "User campus (Firestore): " + userFirestore.getCampus());
+                    } else {
+                        Log.w(TAG, "No user data found in Firestore.");
+                    }
                 }
             });
         } else {
@@ -215,6 +237,11 @@ public class AccountSettingsActivity extends AppCompatActivity {
                         }
                     });
 
+            DocumentReference mFirestore = FirebaseUtil.currentUserDetails();
+            User userFirestore = new User(FirebaseUtil.currentUserId(), username, email, selectCampus);
+            mFirestore.set(userFirestore).addOnSuccessListener(aVoid -> Log.d(TAG, "User data updated in Firestore"))
+                    .addOnFailureListener(e -> Log.e(TAG, "Error updating user data in Firestore", e));
+
             uploadUserImage(user.getUid());
 
             if (!originalEmail.equals(email)) {
@@ -277,6 +304,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 });
 
     }
+
     private void uploadUserImage(String userid) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();

@@ -142,15 +142,17 @@ public class ReplyOuterAdapter extends RecyclerView.Adapter<ReplyHolder> {
             @Override
             public void onClick(View view) {
                 if (reply.replyRootId != null && reply.replyRootId.length() > 0) {
+                    // a sub reply
                     replyViewModel.setReplyRootId(reply.replyRootId);
                     replyViewModel.setReplyToUserId(reply.userId);
                     replyViewModel.setReplyToName(userName[0]);
+                    replyViewModel.setIndex(mark);
                 } else {
                     replyViewModel.setReplyToUserId(reply.userId);
                     replyViewModel.setReplyRootId(reply.replyId);
                     replyViewModel.setReplyToName(userName[0]);
+                    replyViewModel.setIndex(position);
                 }
-                replyViewModel.setIndex(mark);
                 replyViewModel.setTrigger(!replyViewModel.getTrigger().getValue());
             }
         });

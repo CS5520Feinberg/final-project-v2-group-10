@@ -346,6 +346,7 @@ public class DisplayPostActivity extends AppCompatActivity {
             public void onClick(View view) {
                 // <post document> -> replies -> [replyRootId] -> replies -> [replyId]
                 String replyRootId = replyViewModel.getReplyRootId().getValue();
+                int source = replyViewModel.getIndex().getValue();
                 if (replyRootId.length() == 0) {
                     // a direct reply
                     String replyId = generateKey();
@@ -396,7 +397,7 @@ public class DisplayPostActivity extends AppCompatActivity {
                     Reply reply = new Reply(replyId, postId, userId, text);
                     reply.replyRootId = replyRootId;
                     reply.replyToUserId = replyViewModel.getReplyToUserId().getValue();
-                    int source = replyViewModel.getIndex().getValue();
+
 
                     String receiverId = reply.replyToUserId;
 

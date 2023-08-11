@@ -29,6 +29,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,6 +39,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -48,9 +51,13 @@ import java.io.IOException;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.LogInActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.UserViewModel;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.message.ChatActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.model.User;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.post.display_post.DisplayPostActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.search.DisplayUserPostListActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.search.ItemViewModel;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.util.AndroidUtil;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.util.FirebaseUtil;
 
 
 /**
@@ -217,7 +224,37 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-
+        chatsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseUtil.allUserCollectionReference().document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot documentSnapshot = task.getResult();
+                            if (documentSnapshot.exists()) {
+                                User otherUser = documentSnapshot.toObject(User.class);
+                                if (otherUser != null) {
+                                    Intent intent = new Intent(getActivity(), ChatActivity.class);
+                                    AndroidUtil.passUserModelAsIntent(intent, otherUser);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                } else {
+                                    //Toast.makeText(getActivity(), "Failed to fetch user information. Please try again later.", Toast.LENGTH_SHORT).show();
+                                    Log.w(TAG, "Failed to fetch user information. Please try again later.");
+                                }
+                            } else {
+                                //Toast.makeText(getActivity(), "User with the provided ID does not exist.", Toast.LENGTH_SHORT).show();
+                                Log.w(TAG, "User with the provided ID does not exist.");
+                            }
+                        } else {
+                            //Toast.makeText(getActivity(), "Error fetching user information. Please check your internet connection and try again.", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "Error fetching user information. Please check your internet connection and try again.");
+                        }
+                    }
+                });
+            }
+        });
 
 
         floatingActionButton.setOnClickListener(v -> {

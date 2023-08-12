@@ -48,6 +48,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.databinding.ActivityMainBinding;
+import edu.northeastern.numad23su_team_v2_group_10_final_project.message.ChatActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.message.MessageFragment;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.post.display_post.DisplayPostActivity;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.product.ProductFragment;
@@ -150,7 +151,19 @@ public class MainActivity extends AppCompatActivity {
             i.putExtra("postId", postId);
             i.putExtra("pos", pos);
             startActivity(i);
-        } else {
+        } else if (extras != null && extras.containsKey("campus")) {
+            Intent i = new Intent(MainActivity.this, ChatActivity.class);
+            String name = extras.getString("name");
+            String userId = extras.getString("userId");
+            String campus = extras.getString("campus");
+            String email = extras.getString("email");
+            i.putExtra("name", name);
+            i.putExtra("userId", userId);
+            i.putExtra("campus", campus);
+            i.putExtra("email", email);
+            startActivity(i);
+        }
+        else {
             if (savedInstanceState == null || !savedInstanceState.containsKey("SEL")) {
                 View view = binding.bottomNavigationView.findViewById(R.id.product);
                 view.performClick();

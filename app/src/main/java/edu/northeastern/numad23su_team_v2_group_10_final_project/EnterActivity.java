@@ -40,14 +40,25 @@ public class EnterActivity extends AppCompatActivity {
         });
         Bundle extras = getIntent().getExtras();
         if (extras != null && extras.containsKey("postId")) {
-                Intent i = new Intent(EnterActivity.this, MainActivity.class);
-                String postType = extras.getString("postType");
-                String postId = extras.getString("postId");
-                String pos = extras.getString("pos");
-                i.putExtra("postType", postType);
-                i.putExtra("postId", postId);
-                i.putExtra("pos", pos);
-                startActivity(i);
+            Intent i = new Intent(EnterActivity.this, MainActivity.class);
+            String postType = extras.getString("postType");
+            String postId = extras.getString("postId");
+            String pos = extras.getString("pos");
+            i.putExtra("postType", postType);
+            i.putExtra("postId", postId);
+            i.putExtra("pos", pos);
+            startActivity(i);
+        } else if (extras != null && extras.containsKey("campus")) {
+            Intent i = new Intent(EnterActivity.this, MainActivity.class);
+            String name = extras.getString("name");
+            String userId = extras.getString("userId");
+            String campus = extras.getString("campus");
+            String email = extras.getString("email");
+            i.putExtra("name", name);
+            i.putExtra("userId", userId);
+            i.putExtra("campus", campus);
+            i.putExtra("email", email);
+            startActivity(i);
         }
     }
 

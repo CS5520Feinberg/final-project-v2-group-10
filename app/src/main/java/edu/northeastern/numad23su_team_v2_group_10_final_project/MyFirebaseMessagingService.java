@@ -56,16 +56,26 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 handleNow();
             }
             Map<String, String> data = remoteMessage.getData();
-            if(data.get("postType") != null) {
+            if(data!= null) {
                 // post notification
-                String postType = data.get("postType");
-                String postId = data.get("postId");
-                String posStr = data.get("pos");
-
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                i.putExtra("postType", postType);
-                i.putExtra("postId", postId);
-                i.putExtra("pos", posStr);
+                if (data.get("postType") != null) {
+                    String postType = data.get("postType");
+                    String postId = data.get("postId");
+                    String posStr = data.get("pos");
+                    i.putExtra("postType", postType);
+                    i.putExtra("postId", postId);
+                    i.putExtra("pos", posStr);
+                } else if (data.get("campus") != null) {
+                    String name = data.get("name");
+                    String userId = data.get("userId");
+                    String campus = data.get("campus");
+                    String email = data.get("email");
+                    i.putExtra("name", name);
+                    i.putExtra("userId", userId);
+                    i.putExtra("campus", campus);
+                    i.putExtra("email", email);
+                }
                 PendingIntent pIntent = null;
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
                     pIntent = PendingIntent.getActivity

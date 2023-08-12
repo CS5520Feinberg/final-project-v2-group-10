@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.renderscript.Script;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -25,7 +26,14 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.core.FirestoreClient;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -33,6 +41,8 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.northeastern.numad23su_team_v2_group_10_final_project.R;
 import edu.northeastern.numad23su_team_v2_group_10_final_project.message.ChatAdapter;
@@ -151,6 +161,29 @@ public class ChatActivity extends AppCompatActivity {
                 messageInput.setText("");
             }
         });
+        FirebaseDatabase.getInstance().getReference().child("users").child(FirebaseAuth.getInstance().getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String otherId = otherUser.userId;
+                        Map<String, Object> map = new HashMap<>();
+                        User user = snapshot.getValue(User.class);
+                        map.put("type", 0);
+                        map.put("name", user.name);
+                        map.put("userId", snapshot.getKey());
+                        map.put("email", user.email);
+                        map.put("campus", user.campus);
+                        map.put("message", message);
+                        FirebaseFirestore.getInstance().collection("users").document(otherId)
+                                .collection("notifications").add(map);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
     }
 
     private void getOrCreateChatRoom() {

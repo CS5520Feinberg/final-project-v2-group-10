@@ -29,7 +29,7 @@ initialize_app()
 # for post:   postType, postId, postTitle, userName,
 
 
-@scheduler_fn.on_schedule(schedule="*/20  * * * *")
+@scheduler_fn.on_schedule(schedule="*/15  * * * *")
 def warmup(event: scheduler_fn.ScheduledEvent) -> None:
   firestore_client: google.cloud.firestore.Client = firestore.client()
   data = {"type":-1}
@@ -56,6 +56,25 @@ def notify(event: Event[DocumentSnapshot]) -> None:
     title = record["userName"] + " reply to you:"
     body =  record["text"] + " at post: " + record["postTitle"]
     data = {"postType": record["postType"], "postId":record["postId"], "notifyId":notifyId, "pos":record["pos"]}
+    message = messaging.Message(
+            notification=messaging.Notification(
+                title=title,
+                body=body,
+            ),
+            data=data,
+            token=token
+        )
+    messaging.send(message)
+  elif type == 0:
+    firestore_client: google.cloud.firestore.Client = firestore.client()
+    try:
+      token = firestore_client.document("users/" + receiver).get().to_dict()["token"]
+    except KeyError:
+      return
+    record = event.data.to_dict()
+    title = record["name"] + ":"
+    body = record["message"]
+    data = {"name": record["name"], "userId": record["userId"], "email": record["email"], "campus": record["campus"]}
     message = messaging.Message(
             notification=messaging.Notification(
                 title=title,

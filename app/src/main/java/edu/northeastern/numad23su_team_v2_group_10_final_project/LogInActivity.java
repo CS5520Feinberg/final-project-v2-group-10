@@ -70,7 +70,7 @@ public class LogInActivity extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             if (mAuth.getCurrentUser().isEmailVerified()) {
-                                Toast.makeText(LogInActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(LogInActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(this, MainActivity.class));
                                 finish();
                             } else {

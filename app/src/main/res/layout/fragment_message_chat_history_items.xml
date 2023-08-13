@@ -48,8 +48,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="5dp"
-                android:layout_marginEnd="10dp"
-                android:text="12:34" />
+                android:layout_marginEnd="10dp" />
 
         </RelativeLayout>
 
@@ -70,8 +69,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="10dp"
-                android:layout_marginBottom="5dp"
-                android:text="2023-08-02" />
+                android:layout_marginBottom="5dp" />
         </RelativeLayout>
 
 

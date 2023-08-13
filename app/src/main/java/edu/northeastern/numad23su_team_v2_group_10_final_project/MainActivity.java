@@ -254,12 +254,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void hideAllFragments(FragmentManager fragmentManager, FragmentTransaction transaction) {
-       for (String tag: tags) {
-           Fragment fragment = fragmentManager.findFragmentByTag(tag);
-           if (fragment != null) {
-               transaction.hide(fragment);
-           }
-       }
+        for (String tag: tags) {
+            Fragment fragment = fragmentManager.findFragmentByTag(tag);
+            if (fragment != null) {
+                transaction.hide(fragment);
+            }
+        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package edu.northeastern.numad23su_team_v2_group_10_final_project.post.display_post;
 
 import static edu.northeastern.numad23su_team_v2_group_10_final_project.post.SearchUtils.generateKey;
+import static edu.northeastern.numad23su_team_v2_group_10_final_project.post.SearchUtils.triGram;
 import static edu.northeastern.numad23su_team_v2_group_10_final_project.post.Utils.getPostTypes;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -309,10 +310,12 @@ public class DisplayPostActivity extends AppCompatActivity {
                 } else {
                     post.title = "(inactive)" + post.title;
                 }
-                Map<String, Object> map = post.toMap();
-                map.put("timestamp", FieldValue.serverTimestamp());
+                Map<String, Object> postMap = post.toMap();
+                postMap.put("timestamp", FieldValue.serverTimestamp());
+                Map<String, Object> data = triGram(post.title + " " + post.text);
+                data.putAll(postMap);
                 mFireStoreRef.collection("posts").document(postType).collection("posts")
-                        .document(postId).set(map).addOnFailureListener(new OnFailureListener() {
+                        .document(postId).set(data).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Toast.makeText(DisplayPostActivity.this, "Update failed.", Toast.LENGTH_LONG).show();

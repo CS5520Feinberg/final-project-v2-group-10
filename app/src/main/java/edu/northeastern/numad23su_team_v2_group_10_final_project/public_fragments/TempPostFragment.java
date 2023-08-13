@@ -259,7 +259,6 @@ public class TempPostFragment extends Fragment {
                 if (lastVisible != null) q = q.startAfter(lastVisible).limit(limit);
                 else q = q.limit(limit);
             } else {
-                limit = Integer.MAX_VALUE; // cancel limit for search and user post list
                 if (className.equals("SearchActivity")) {
                     q = ref.where(Filter.and(SearchUtils.generateFilterArr(query)));
                 } else {

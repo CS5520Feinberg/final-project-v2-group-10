@@ -49,6 +49,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -312,10 +313,8 @@ public class DisplayPostActivity extends AppCompatActivity {
                 }
                 Map<String, Object> postMap = post.toMap();
                 postMap.put("timestamp", FieldValue.serverTimestamp());
-                Map<String, Object> data = triGram(post.title + " " + post.text);
-                data.putAll(postMap);
                 mFireStoreRef.collection("posts").document(postType).collection("posts")
-                        .document(postId).set(data).addOnFailureListener(new OnFailureListener() {
+                        .document(postId).set(postMap, SetOptions.merge()).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Toast.makeText(DisplayPostActivity.this, "Update failed.", Toast.LENGTH_LONG).show();

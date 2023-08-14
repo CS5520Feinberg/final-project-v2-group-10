@@ -111,7 +111,7 @@ public class RegisterActivity extends AppCompatActivity {
                 signupUsername.setError("Username is Required");
                 return;
             }
-            if (TextUtils.isEmpty(email) && !validEmail(email)) {
+            if (TextUtils.isEmpty(email) || !validEmail(email)) {
                 signupEmail.setError("Valid NEU Email is Required");
                 return;
             }

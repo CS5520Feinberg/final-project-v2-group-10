@@ -132,7 +132,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // manage this apps subscriptions on the server side, send the
         // FCM registration token to your app server.
         String userId = FirebaseAuth.getInstance().getUid();
-        FirebaseFirestore.getInstance().collection("users").document(userId).update("token", token);
+        if (userId != null) {
+            FirebaseFirestore.getInstance().collection("users").document(userId).update("token", token);
+        }
     }
     // [END on_new_token]
 

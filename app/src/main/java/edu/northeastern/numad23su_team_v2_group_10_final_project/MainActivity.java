@@ -86,7 +86,10 @@ public class MainActivity extends AppCompatActivity {
                         }
                         // Get new FCM registration token
                         String token = task.getResult();
-                        FirebaseFirestore.getInstance().collection("users").document(FirebaseAuth.getInstance().getUid()).update("token", token);
+                        String userId = FirebaseAuth.getInstance().getUid();
+                        if (userId != null) {
+                            FirebaseFirestore.getInstance().collection("users").document(userId).update("token", token);
+                        }
                     }
                 });
 
